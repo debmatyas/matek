@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Közös nevező gyakorló</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #fff;
+      padding: 20px 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .fraction-display {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 20px 0;
+    }
+    .frac-show {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 26px;
+      width: 70px;
+    }
+    .line-show {
+      width: 70px;
+      height: 2px;
+      background: black;
+      margin: 3px 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      justify-items: center;
+      margin-bottom: 15px;
+    }
+
+    .cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 80px;
+    }
+
+    .frac-input {
+      width: 70px;
+      height: 35px;
+      font-size: 20px;
+      text-align: center;
+      -moz-appearance: textfield;
+    }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .line {
+      width: 70px;
+      height: 2px;
+      background: black;
+      margin: 3px 0;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 15px;
+      font-size: 18px;
+      min-height: 24px;
+    }
+    .correct {
+      color: #2e7d32;
+      font-weight: bold;
+    }
+    .wrong {
+      color: #c62828;
+      font-weight: bold;
+    }
+
+    .stats {
+      margin-top: 15px;
+      font-size: 16px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Add meg a közös nevezőt!</h1>
+
+    <div class="fraction-display">
+      <div class="frac-show">
+        <div id="showNum1">?</div>
+        <div class="line-show"></div>
+        <div id="showDen1">?</div>
+      </div>
+
+      <div class="frac-show">
+        <div id="showNum2">?</div>
+        <div class="line-show"></div>
+        <div id="showDen2">?</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="cell">
+        <input type="number" id="num1" class="frac-input">
+        <div class="line"></div>
+        <input type="number" id="den1" class="frac-input">
+      </div>
+
+      <div class="cell">
+        <input type="number" id="num2" class="frac-input">
+        <div class="line"></div>
+        <input type="number" id="den2" class="frac-input">
+      </div>
+    </div>
+
+    <button id="checkBtn">Ellenőrzés</button>
+    <button id="nextBtn">Következő feladat</button>
+
+    <div class="result" id="result"></div>
+
+    <div class="stats">
+      Helyes: <span id="good">0</span> |
+      Rossz: <span id="bad">0</span>
+    </div>
+  </div>
+
+  <script>
+    const showNum1 = document.getElementById('showNum1');
+    const showDen1 = document.getElementById('showDen1');
+    const showNum2 = document.getElementById('showNum2');
+    const showDen2 = document.getElementById('showDen2');
+
+    const num1El = document.getElementById('num1');
+    const den1El = document.getElementById('den1');
+    const num2El = document.getElementById('num2');
+    const den2El = document.getElementById('den2');
+
+    const resultEl = document.getElementById('result');
+    const goodEl = document.getElementById('good');
+    const badEl = document.getElementById('bad');
+
+    let a, b, c, d;
+    let newNum1, newNum2, commonDen;
+    let good = 0;
+    let bad = 0;
+
+    function gcd(x, y) {
+      while (y !== 0) {
+        let t = y;
+        y = x % y;
+        x = t;
+      }
+      return x;
+    }
+
+    function lcm(x, y) {
+      return (x * y) / gcd(x, y);
+    }
+
+    function simplify(num, den) {
+      const g = gcd(num, den);
+      return [num / g, den / g];
+    }
+
+    function generateSimpleFraction() {
+      const den = Math.floor(Math.random() * 8) + 2;
+      const num = Math.floor(Math.random() * (den - 1)) + 1;
+      return [num, den];
+    }
+
+    function newTask() {
+      resultEl.textContent = "";
+      resultEl.className = "result";
+
+      [a, b] = generateSimpleFraction();
+      [c, d] = generateSimpleFraction();
+
+      commonDen = lcm(b, d);
+      newNum1 = a * (commonDen / b);
+      newNum2 = c * (commonDen / d);
+
+      showNum1.textContent = a;
+      showDen1.textContent = b;
+      showNum2.textContent = c;
+      showDen2.textContent = d;
+
+      num1El.value = "";
+      den1El.value = "";
+      num2El.value = "";
+      den2El.value = "";
+      num1El.focus();
+    }
+
+    function check() {
+      const u1 = Number(num1El.value);
+      const ud1 = Number(den1El.value);
+      const u2 = Number(num2El.value);
+      const ud2 = Number(den2El.value);
+
+      if (!u1 || !ud1 || !u2 || !ud2) {
+        resultEl.textContent = "Tölts ki minden mezőt!";
+        resultEl.className = "result wrong";
+        return;
+      }
+
+      const [s1n, s1d] = simplify(u1, ud1);
+      const [s2n, s2d] = simplify(u2, ud2);
+
+      const correct1 = (u1 === newNum1 && ud1 === commonDen);
+      const correct2 = (u2 === newNum2 && ud2 === commonDen);
+
+      const simplifiedCorrect1 = (s1n === newNum1 && s1d === commonDen);
+      const simplifiedCorrect2 = (s2n === newNum2 && s2d === commonDen);
+
+      if (correct1 && correct2) {
+        good++;
+        goodEl.textContent = good;
+        resultEl.textContent = "Helyes!";
+        resultEl.className = "result correct";
+      }
+      else if (simplifiedCorrect1 && simplifiedCorrect2) {
+        bad++;
+        badEl.textContent = bad;
+        resultEl.textContent =
+          `Nem jó, mert van egyszerűbb alak is: ${s1n}/${s1d} és ${s2n}/${s2d}`;
+        resultEl.className = "result wrong";
+      }
+      else {
+        bad++;
+        badEl.textContent = bad;
+        resultEl.textContent =
+          `Nem jó. Helyes megoldás: ${newNum1}/${commonDen} és ${newNum2}/${commonDen}`;
+        resultEl.className = "result wrong";
+      }
+    }
+
+    document.getElementById('checkBtn').addEventListener('click', check);
+    document.getElementById('nextBtn').addEventListener('click', newTask);
+
+    [num1El, den1El, num2El, den2El].forEach(input => {
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') check();
+      });
+    });
+
+    newTask();
+  </script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Szorzótábla gyakorló</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #fff;
+      padding: 20px 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    .ops {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    .question {
+      font-size: 26px;
+      margin: 20px 0;
+    }
+    input[type="number"] {
+      padding: 8px;
+      font-size: 18px;
+      width: 120px;
+      text-align: center;
+      -moz-appearance: textfield;
+    }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .result {
+      margin-top: 15px;
+      font-size: 18px;
+      min-height: 24px;
+    }
+    .correct {
+      color: #2e7d32;
+      font-weight: bold;
+    }
+    .wrong {
+      color: #c62828;
+      font-weight: bold;
+    }
+    .stats {
+      margin-top: 15px;
+      font-size: 16px;
+      color: #333;
+    }
+    .timer {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #444;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Szorzótábla gyakorló (1–10)</h1>
+
+    <div class="ops">
+      <label><input type="checkbox" id="mul"> Szorzás</label>
+      <label><input type="checkbox" id="div"> Osztás</label>
+    </div>
+
+    <button id="newTask">Új feladat</button>
+
+    <div class="question" id="question">?</div>
+
+    <input type="number" id="answer" placeholder="Írd be a választ">
+
+    <button id="checkBtn">Ellenőrzés</button>
+
+    <div class="timer" id="timer">Hátralévő idő: 10 mp</div>
+
+    <div class="result" id="result"></div>
+
+    <div class="stats">
+      Helyes: <span id="good">0</span> |
+      Rossz: <span id="bad">0</span>
+    </div>
+  </div>
+
+  <script>
+    const questionEl = document.getElementById('question');
+    const answerEl = document.getElementById('answer');
+    const resultEl = document.getElementById('result');
+    const timerEl = document.getElementById('timer');
+    const goodEl = document.getElementById('good');
+    const badEl = document.getElementById('bad');
+    const checkBtn = document.getElementById('checkBtn');
+
+    let a, b, correctAnswer, op;
+    let good = 0;
+    let bad = 0;
+    let timeLeft = 10;
+    let timerInterval;
+    let lockInput = false;
+    let wrongAttempts = 0;
+    let mode = "check";
+    let autoNextInterval;
+
+    function pickOperation() {
+      let ops = [];
+      if (document.getElementById("mul").checked) ops.push("×");
+      if (document.getElementById("div").checked) ops.push("÷");
+      if (ops.length === 0) return null;
+      return ops[Math.floor(Math.random() * ops.length)];
+    }
+
+    function setCheckMode() {
+      mode = "check";
+      checkBtn.textContent = "Ellenőrzés";
+    }
+
+    function setNextMode() {
+      mode = "next";
+      checkBtn.textContent = "Következő";
+    }
+
+    function startAutoNext() {
+      let next = 3;
+      autoNextInterval = setInterval(() => {
+        next--;
+        resultEl.textContent = `Helyes! Következő feladat ${next} mp múlva...`;
+        if (next <= 0) {
+          clearInterval(autoNextInterval);
+          newQuestion();
+        }
+      }, 1000);
+    }
+
+    function newQuestion() {
+      lockInput = false;
+      wrongAttempts = 0;
+      setCheckMode();
+
+      clearInterval(autoNextInterval);
+
+      timeLeft = 10;
+      timerEl.textContent = "Hátralévő idő: 10 mp";
+
+      op = pickOperation();
+      if (!op) {
+        questionEl.textContent = "Válassz műveletet!";
+        return;
+      }
+
+      a = Math.floor(Math.random() * 10) + 1;
+      b = Math.floor(Math.random() * 10) + 1;
+
+      if (op === "×") {
+        correctAnswer = a * b;
+        questionEl.textContent = `${a} × ${b} = ?`;
+      }
+
+      if (op === "÷") {
+        correctAnswer = a;
+        b = Math.floor(Math.random() * 10) + 1;
+        a = correctAnswer * b;
+        questionEl.textContent = `${a} ÷ ${b} = ?`;
+      }
+
+      resultEl.textContent = "";
+      resultEl.className = "result";
+
+      answerEl.value = "";
+      answerEl.focus();
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(countdown, 1000);
+    }
+
+    function countdown() {
+      timeLeft--;
+      timerEl.textContent = `Hátralévő idő: ${timeLeft} mp`;
+
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        handleWrong();
+      }
+    }
+
+    function handleWrong() {
+      wrongAttempts++;
+
+      if (wrongAttempts < 3) {
+        bad++;
+        badEl.textContent = bad;
+        resultEl.textContent = "Helytelen";
+        resultEl.className = "result wrong";
+
+        timeLeft = 10;
+        timerEl.textContent = "Hátralévő idő: 10 mp";
+        clearInterval(timerInterval);
+        timerInterval = setInterval(countdown, 1000);
+        answerEl.value = "";
+        answerEl.focus();
+      } else {
+        bad++;
+        badEl.textContent = bad;
+        resultEl.textContent = `A helyes válasz: ${correctAnswer}`;
+        resultEl.className = "result wrong";
+        lockInput = true;
+        setNextMode();
+        startAutoNext();
+      }
+    }
+
+    function checkAnswer() {
+      if (lockInput) return;
+
+      const userValue = Number(answerEl.value);
+      clearInterval(timerInterval);
+
+      if (userValue === correctAnswer) {
+        good++;
+        goodEl.textContent = good;
+        resultEl.textContent = "Helyes! Következő feladat 3 mp múlva...";
+        resultEl.className = "result correct";
+        lockInput = true;
+        setNextMode();
+        startAutoNext();
+      } else {
+        handleWrong();
+      }
+    }
+
+    answerEl.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        if (mode === "check") checkAnswer();
+        else if (mode === "next") newQuestion();
+      }
+    });
+
+    checkBtn.onclick = () => {
+      if (mode === "check") checkAnswer();
+      else if (mode === "next") newQuestion();
+    };
+
+    document.getElementById("newTask").onclick = newQuestion;
+
+    newQuestion();
+  </script>
+</body>
+</html>

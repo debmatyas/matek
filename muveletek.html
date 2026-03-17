@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Törtes műveletek gyakorlása</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #fff;
+      padding: 20px 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .ops {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .extra {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      gap: 10px;
+      font-size: 16px;
+    }
+
+    .fraction-display {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 20px 0;
+    }
+    .frac-show {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 26px;
+      width: 70px;
+    }
+    .line-show {
+      width: 70px;
+      height: 2px;
+      background: black;
+      margin: 3px 0;
+    }
+
+    .answer-box {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .frac-input {
+      width: 70px;
+      height: 35px;
+      font-size: 20px;
+      text-align: center;
+      -moz-appearance: textfield;
+    }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .line {
+      width: 70px;
+      height: 2px;
+      background: black;
+      margin: 3px 0;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 15px;
+      font-size: 18px;
+      min-height: 24px;
+    }
+    .correct {
+      color: #2e7d32;
+      font-weight: bold;
+    }
+    .wrong {
+      color: #c62828;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Törtes műveletek gyakorlása</h1>
+
+    <div class="ops">
+      <label><input type="checkbox" id="add"> + </label>
+      <label><input type="checkbox" id="sub"> − </label>
+      <label><input type="checkbox" id="mul"> × </label>
+      <label><input type="checkbox" id="div"> ÷ </label>
+    </div>
+
+    <div class="extra">
+      <label><input type="checkbox" id="sameDen"> Azonos nevező</label>
+    </div>
+
+    <button id="newTask">Új feladat</button>
+
+    <div class="fraction-display">
+      <div class="frac-show">
+        <div id="aNum">?</div>
+        <div class="line-show"></div>
+        <div id="aDen">?</div>
+      </div>
+
+      <div id="opSymbol" style="font-size:30px; margin-top:25px;">?</div>
+
+      <div class="frac-show">
+        <div id="bNum">?</div>
+        <div class="line-show"></div>
+        <div id="bDen">?</div>
+      </div>
+    </div>
+
+    <div class="answer-box">
+      <button id="toggleType">Tört</button>
+
+      <div id="answerFraction" style="display:flex; flex-direction:column; align-items:center;">
+        <input type="number" id="ansNum" class="frac-input">
+        <div class="line"></div>
+        <input type="number" id="ansDen" class="frac-input">
+      </div>
+
+      <input type="number" id="ansInt" class="frac-input" style="display:none;">
+    </div>
+
+    <button id="checkBtn">Ellenőrzés</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    const aNum = document.getElementById("aNum");
+    const aDen = document.getElementById("aDen");
+    const bNum = document.getElementById("bNum");
+    const bDen = document.getElementById("bDen");
+    const opSymbol = document.getElementById("opSymbol");
+
+    const ansNum = document.getElementById("ansNum");
+    const ansDen = document.getElementById("ansDen");
+    const ansInt = document.getElementById("ansInt");
+
+    const resultEl = document.getElementById("result");
+
+    let currentOp = null;
+    let a, b, c, d;
+    let correctNum, correctDen;
+    let attempts = 0;
+
+    function gcd(x, y) {
+      while (y !== 0) {
+        let t = y;
+        y = x % y;
+        x = t;
+      }
+      return x;
+    }
+
+    function simplify(n, d) {
+      let g = gcd(n, d);
+      return [n / g, d / g];
+    }
+
+    function generateFraction() {
+      let den = Math.floor(Math.random() * 8) + 2;
+      let num = Math.floor(Math.random() * (den - 1)) + 1;
+      return [num, den];
+    }
+
+    function pickOperation() {
+      let ops = [];
+      if (document.getElementById("add").checked) ops.push("+");
+      if (document.getElementById("sub").checked) ops.push("-");
+      if (document.getElementById("mul").checked) ops.push("×");
+      if (document.getElementById("div").checked) ops.push("÷");
+
+      if (ops.length === 0) return null;
+      return ops[Math.floor(Math.random() * ops.length)];
+    }
+
+    function newTask() {
+      resultEl.textContent = "";
+      attempts = 0;
+
+      currentOp = pickOperation();
+      if (!currentOp) {
+        resultEl.textContent = "Válassz ki legalább egy műveletet!";
+        return;
+      }
+
+      const sameDen = document.getElementById("sameDen").checked;
+
+      do {
+        if (sameDen) {
+          let den = Math.floor(Math.random() * 8) + 2;
+          a = Math.floor(Math.random() * (den - 1)) + 1;
+          b = den;
+          c = Math.floor(Math.random() * (den - 1)) + 1;
+          d = den;
+        } else {
+          [a, b] = generateFraction();
+          [c, d] = generateFraction();
+        }
+
+        let tempNum, tempDen;
+
+        if (currentOp === "+") {
+          tempNum = a * d + c * b;
+          tempDen = b * d;
+        }
+        if (currentOp === "-") {
+          tempNum = a * d - c * b;
+          tempDen = b * d;
+        }
+        if (currentOp === "×") {
+          tempNum = a * c;
+          tempDen = b * d;
+        }
+        if (currentOp === "÷") {
+          tempNum = a * d;
+          tempDen = b * c;
+        }
+
+        [tempNum, tempDen] = simplify(tempNum, tempDen);
+
+        if (tempNum >= 0) {
+          correctNum = tempNum;
+          correctDen = tempDen;
+          break;
+        }
+
+      } while (true);
+
+      aNum.textContent = a;
+      aDen.textContent = b;
+      bNum.textContent = c;
+      bDen.textContent = d;
+      opSymbol.textContent = currentOp;
+
+      ansNum.value = "";
+      ansDen.value = "";
+      ansInt.value = "";
+    }
+
+    document.getElementById("newTask").onclick = newTask;
+
+    document.getElementById("toggleType").onclick = () => {
+      if (ansInt.style.display === "none") {
+        ansInt.style.display = "block";
+        document.getElementById("answerFraction").style.display = "none";
+        document.getElementById("toggleType").textContent = "Egész";
+      } else {
+        ansInt.style.display = "none";
+        document.getElementById("answerFraction").style.display = "flex";
+        document.getElementById("toggleType").textContent = "Tört";
+      }
+    };
+
+    function isCorrectFraction(uNum, uDen) {
+      if (uNum === 0) return correctNum === 0;
+      let [sNum, sDen] = simplify(uNum, uDen);
+      return sNum === correctNum && sDen === correctDen;
+    }
+
+    document.getElementById("checkBtn").onclick = () => {
+      attempts++;
+
+      if (ansInt.style.display === "block") {
+        if (Number(ansInt.value) === correctNum / correctDen) {
+          resultEl.textContent = "Helyes!";
+          resultEl.className = "result correct";
+        } else {
+          if (attempts < 3) {
+            resultEl.textContent = "Nem jó, próbáld újra!";
+            resultEl.className = "result wrong";
+          } else {
+            resultEl.textContent = `Helyes eredmény: ${correctNum}/${correctDen}`;
+            resultEl.className = "result wrong";
+          }
+        }
+        return;
+      }
+
+      let uNum = Number(ansNum.value);
+      let uDen = Number(ansDen.value);
+
+      if (!uDen && uNum !== 0) {
+        resultEl.textContent = "Tölts ki minden mezőt!";
+        resultEl.className = "result wrong";
+        return;
+      }
+
+      if (isCorrectFraction(uNum, uDen)) {
+        resultEl.textContent = "Helyes!";
+        resultEl.className = "result correct";
+      } else {
+        if (attempts < 3) {
+          resultEl.textContent = "Nem jó, próbáld újra!";
+          resultEl.className = "result wrong";
+        } else {
+          resultEl.textContent = `Helyes eredmény: ${correctNum}/${correctDen}`;
+          resultEl.className = "result wrong";
+        }
+      }
+    };
+  </script>
+</body>
+</html>
