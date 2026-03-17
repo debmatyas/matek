@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Osztó-e gyakorló</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="container">
+    <h1>Osztó-e?</h1>
+
+    <div id="question" class="question">?</div>
+
+    <button id="yesBtn">Igen</button>
+    <button id="noBtn">Nem</button>
+
+    <div class="timer" id="timer">Hátralévő idő: 10 mp</div>
+
+    <div class="result" id="result"></div>
+
+    <button id="newTask">Új feladat</button>
+
+    <div class="stats">
+      Helyes: <span id="good">0</span> |
+      Rossz: <span id="bad">0</span>
+    </div>
+  </div>
+
+  <script>
+    const questionEl = document.getElementById("question");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const resultEl = document.getElementById("result");
+    const goodEl = document.getElementById("good");
+    const badEl = document.getElementById("bad");
+    const timerEl = document.getElementById("timer");
+
+    let a, b;
+    let good = 0;
+    let bad = 0;
+    let timeLeft = 10;
+    let timerInterval;
+    let lockInput = false;
+    let autoNext;
+
+    /* ===== RAGOZÁS A MEGADOTT SZABÁLYOK SZERINT ===== */
+    function rag(number) {
+      const last = number % 10;
+      const special = number % 100;
+
+      // Külön kezelt tízesek
+      if (special === 10) return "nek";
+      if (special === 20) return "nak";
+      if (special === 30) return "nak";
+      if (special === 40) return "nek";
+      if (special === 50) return "nek";
+      if (special === 60) return "nak";
+      if (special === 70) return "nek";
+      if (special === 80) return "nak";
+      if (special === 90) return "nek";
+
+      // Egyjegyűek
+      if (last === 1) return "nek";
+      if (last === 2) return "nek";
+      if (last === 3) return "nak";
+      if (last === 4) return "nek";
+      if (last === 5) return "nek";
+      if (last === 6) return "nak";
+      if (last === 7) return "nek";
+      if (last === 8) return "nak";
+      if (last === 9) return "nek";
+
+      return "nek";
+    }
+
+    /* ===== ÚJ FELADAT ===== */
+    function newQuestion() {
+      lockInput = false;
+
+      clearInterval(timerInterval);
+      clearInterval(autoNext);
+
+      timeLeft = 10;
+      timerEl.textContent = "Hátralévő idő: 10 mp";
+
+      // bal oldali szám mindig nagyobb
+      a = Math.floor(Math.random() * 50) + 1;
+      b = Math.floor(Math.random() * 50) + 1;
+
+      if (a < b) [a, b] = [b, a];
+
+      questionEl.textContent = `${a}-${rag(a)} osztója ${b}?`;
+
+      resultEl.textContent = "";
+      resultEl.className = "result";
+
+      timerInterval = setInterval(countdown, 1000);
+    }
+
+    /* ===== VISSZASZÁMLÁLÓ ===== */
+    function countdown() {
+      timeLeft--;
+      timerEl.textContent = `Hátralévő idő: ${timeLeft} mp`;
+
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        handleWrong();
+      }
+    }
+
+    /* ===== HIBÁS VÁLASZ ===== */
+    function handleWrong() {
+      if (lockInput) return;
+
+      bad++;
+      badEl.textContent = bad;
+
+      resultEl.textContent = "Helytelen!";
+      resultEl.className = "result wrong";
+
+      lockInput = true;
+    }
+
+    /* ===== AUTOMATIKUS ÚJ FELADAT HELYES VÁLASZ ESETÉN ===== */
+    function startAutoNext() {
+      let left = 3;
+      resultEl.textContent = `Helyes! Új feladat ${left} mp múlva...`;
+
+      autoNext = setInterval(() => {
+        left--;
+        resultEl.textContent = `Helyes! Új feladat ${left} mp múlva...`;
+
+        if (left <= 0) {
+          clearInterval(autoNext);
+          newQuestion();
+        }
+      }, 1000);
+    }
+
+    /* ===== VÁLASZ ELLENŐRZÉSE ===== */
+    function checkAnswer(isYes) {
+      if (lockInput) return;
+
+      clearInterval(timerInterval);
+
+      const correct = (a % b === 0);
+
+      if (isYes === correct) {
+        good++;
+        goodEl.textContent = good;
+        resultEl.className = "result correct";
+        startAutoNext();
+      } else {
+        bad++;
+        badEl.textContent = bad;
+        resultEl.textContent = "Helytelen!";
+        resultEl.className = "result wrong";
+      }
+
+      lockInput = true;
+    }
+
+    yesBtn.onclick = () => checkAnswer(true);
+    noBtn.onclick = () => checkAnswer(false);
+    document.getElementById("newTask").onclick = newQuestion;
+
+    newQuestion();
+  </script>
+
+</body>
+</html>

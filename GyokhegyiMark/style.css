@@ -1,0 +1,154 @@
+/* ===== Alap beállítások ===== */
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* ===== Konténer ===== */
+.container {
+  background: #fff;
+  padding: 20px 25px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+}
+
+h1 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+/* ===== Törtek megjelenítése ===== */
+.fraction-display {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: 20px 0;
+}
+
+.frac-show {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 26px;
+  width: 70px;
+}
+
+.line-show, .line {
+  width: 70px;
+  height: 2px;
+  background: black;
+  margin: 3px 0;
+}
+
+.input_line{
+    margin-left: 4em;
+}
+
+/* ===== Rácsos elrendezés ===== */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  justify-items: center;
+  margin-bottom: 15px;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 120px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+}
+
+.label-left {
+  font-size: 14px;
+  font-weight: bold;
+  width: 60px;
+  text-align: right;
+}
+
+/* ===== Input mezők ===== */
+.frac-input {
+  width: 70px;
+  height: 35px;
+  font-size: 20px;
+  text-align: center;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ===== Gombok ===== */
+button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* ===== Eredmény kijelzés ===== */
+.result {
+  margin-top: 15px;
+  font-size: 18px;
+  min-height: 24px;
+}
+
+.correct {
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.wrong {
+  color: #c62828;
+  font-weight: bold;
+}
+
+/* ===== Szépen formázott tört ===== */
+.pretty-frac {
+  display: inline-block;
+  text-align: center;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.pretty-frac .top {
+  border-bottom: 2px solid black;
+  padding: 2px 6px;
+}
+
+.pretty-frac .bottom {
+  padding: 2px 6px;
+}
+
+/* ===== Statisztika ===== */
+.stats {
+  margin-top: 15px;
+  font-size: 16px;
+  color: #333;
+}
+
+/* ===== ÚJ: Osztó-e játék elemei ===== */
+
+.question {
+  font-size: 32px;
+  margin: 20px 0;
+  font-weight: bold;
+}

@@ -3,115 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Törtes műveletek gyakorlása</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .container {
-      background: #fff;
-      padding: 20px 25px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      max-width: 520px;
-      width: 100%;
-      text-align: center;
-    }
-    h1 {
-      font-size: 22px;
-      margin-bottom: 10px;
-    }
-
-    .ops {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-bottom: 10px;
-      font-size: 18px;
-    }
-
-    .extra {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-      gap: 10px;
-      font-size: 16px;
-    }
-
-    .fraction-display {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      margin: 20px 0;
-    }
-    .frac-show {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 26px;
-      width: 70px;
-    }
-    .line-show {
-      width: 70px;
-      height: 2px;
-      background: black;
-      margin: 3px 0;
-    }
-
-    .answer-box {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .frac-input {
-      width: 70px;
-      height: 35px;
-      font-size: 20px;
-      text-align: center;
-      -moz-appearance: textfield;
-    }
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    .line {
-      width: 70px;
-      height: 2px;
-      background: black;
-      margin: 3px 0;
-    }
-
-    button {
-      margin-top: 15px;
-      padding: 8px 16px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .result {
-      margin-top: 15px;
-      font-size: 18px;
-      min-height: 24px;
-    }
-    .correct {
-      color: #2e7d32;
-      font-weight: bold;
-    }
-    .wrong {
-      color: #c62828;
-      font-weight: bold;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
@@ -147,9 +39,9 @@
     </div>
 
     <div class="answer-box">
-      <button id="toggleType">Tört</button>
+      <button id="toggleType" class="toggle-btn">Tört</button>
 
-      <div id="answerFraction" style="display:flex; flex-direction:column; align-items:center;">
+      <div id="answerFraction">
         <input type="number" id="ansNum" class="frac-input">
         <div class="line"></div>
         <input type="number" id="ansDen" class="frac-input">
@@ -159,6 +51,7 @@
     </div>
 
     <button id="checkBtn">Ellenőrzés</button>
+    <button id="nextBtn" style="display:none;">Következő</button>
 
     <div class="result" id="result"></div>
   </div>
@@ -174,6 +67,8 @@
     const ansDen = document.getElementById("ansDen");
     const ansInt = document.getElementById("ansInt");
 
+    const checkBtn = document.getElementById("checkBtn");
+    const nextBtn = document.getElementById("nextBtn");
     const resultEl = document.getElementById("result");
 
     let currentOp = null;
@@ -215,6 +110,7 @@
     function newTask() {
       resultEl.textContent = "";
       attempts = 0;
+      nextBtn.style.display = "none";
 
       currentOp = pickOperation();
       if (!currentOp) {
@@ -296,13 +192,14 @@
       return sNum === correctNum && sDen === correctDen;
     }
 
-    document.getElementById("checkBtn").onclick = () => {
+    function checkAnswer() {
       attempts++;
 
       if (ansInt.style.display === "block") {
         if (Number(ansInt.value) === correctNum / correctDen) {
           resultEl.textContent = "Helyes!";
           resultEl.className = "result correct";
+          nextBtn.style.display = "inline-block";
         } else {
           if (attempts < 3) {
             resultEl.textContent = "Nem jó, próbáld újra!";
@@ -310,6 +207,7 @@
           } else {
             resultEl.textContent = `Helyes eredmény: ${correctNum}/${correctDen}`;
             resultEl.className = "result wrong";
+            nextBtn.style.display = "inline-block";
           }
         }
         return;
@@ -327,6 +225,7 @@
       if (isCorrectFraction(uNum, uDen)) {
         resultEl.textContent = "Helyes!";
         resultEl.className = "result correct";
+        nextBtn.style.display = "inline-block";
       } else {
         if (attempts < 3) {
           resultEl.textContent = "Nem jó, próbáld újra!";
@@ -334,9 +233,18 @@
         } else {
           resultEl.textContent = `Helyes eredmény: ${correctNum}/${correctDen}`;
           resultEl.className = "result wrong";
+          nextBtn.style.display = "inline-block";
         }
       }
-    };
+    }
+
+    checkBtn.onclick = checkAnswer;
+    nextBtn.onclick = newTask;
+
+    ansNum.addEventListener("keydown", e => { if (e.key === "Enter") checkAnswer(); });
+    ansDen.addEventListener("keydown", e => { if (e.key === "Enter") checkAnswer(); });
+    ansInt.addEventListener("keydown", e => { if (e.key === "Enter") checkAnswer(); });
+
   </script>
 </body>
 </html>
