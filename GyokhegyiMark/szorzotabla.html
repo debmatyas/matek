@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
   <meta charset="UTF-8">
   <title>Szorzótábla gyakorló</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <div class="container">
+    <div class="nav-links">
+      <a href="https://debmatyas.github.io/matek/GyokhegyiMark/muveletek.html">Alapműveletek</a>
+      <a href="https://debmatyas.github.io/matek/GyokhegyiMark/kozos_nevezo.html">Közös nevező</a>
+      <a href="https://debmatyas.github.io/matek/GyokhegyiMark/osztoja.html">Osztója?</a>
+      <a href="https://debmatyas.github.io/matek/GyokhegyiMark/szorzotabla.html">Szorzás és osztás</a>
+    </div>
     <h1>Szorzótábla gyakorló (1–10)</h1>
 
     <div class="ops">
@@ -177,7 +185,7 @@
       }
     }
 
-    answerEl.addEventListener('keydown', function(e) {
+    answerEl.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') {
         if (mode === "check") checkAnswer();
         else if (mode === "next") newQuestion();
@@ -194,4 +202,5 @@
     newQuestion();
   </script>
 </body>
+
 </html>
