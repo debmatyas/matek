@@ -2,81 +2,55 @@
 <html lang="hu">
 <head>
 <meta charset="UTF-8">
-<title>QR PDF API</title>
+<title>QR Lista</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  .item { margin-bottom: 40px; }
+  .name { font-size: 20px; font-weight: bold; margin-bottom: 10px; }
+  img { width: 200px; height: 200px; }
+</style>
 </head>
 <body>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<h1>QR kódok</h1>
+<div id="container"></div>
+
 <script>
-async function loadImageAsDataURL(url) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.onload = function () {
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0);
-      resolve(canvas.toDataURL("image/png"));
-    };
-    img.onerror = reject;
-    img.src = url;
-  });
-}
-
-async function generatePDF() {
+function renderQRCodes() {
   const params = new URLSearchParams(window.location.search);
-
-  // Több data= paraméter összegyűjtése
   const items = params.getAll("data");
 
   if (items.length === 0) {
-    document.body.innerHTML = "<h2>Nincs data paraméter az URL-ben.</h2>";
+    document.getElementById("container").innerHTML = "<p>Nincs data paraméter.</p>";
     return;
   }
 
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
+  const container = document.getElementById("container");
 
-  let y = 20;
-
-  for (let i = 0; i < items.length; i++) {
-    const raw = decodeURIComponent(items[i].trim());
+  items.forEach(raw => {
+    const decoded = decodeURIComponent(raw.trim());
+    const parts = decoded.split("|");
 
     // A név a 3. elem (index 2)
-    const parts = raw.split("|");
     const name = parts[2] ? parts[2].trim() : "Név ismeretlen";
 
     const qrUrl =
       "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
-      encodeURIComponent(raw);
+      encodeURIComponent(decoded);
 
-    const dataUrl = await loadImageAsDataURL(qrUrl);
+    const div = document.createElement("div");
+    div.className = "item";
 
-    // Név kiírása a QR fölé
-    doc.setFontSize(14);
-    doc.text(name, 10, y - 5);
+    div.innerHTML = `
+      <div class="name">${name}</div>
+      <img src="${qrUrl}" alt="QR">
+    `;
 
-    // QR kód
-    doc.addImage(dataUrl, "PNG", 10, y, 80, 80);
-
-    y += 110;
-
-    if (y > 260 && i < items.length - 1) {
-      doc.addPage();
-      y = 20;
-    }
-  }
-
-  const pdfBlob = doc.output("blob");
-  const pdfUrl = URL.createObjectURL(pdfBlob);
-
-  // PDF megnyitása azonnal
-  window.location.href = pdfUrl;
+    container.appendChild(div);
+  });
 }
 
-window.onload = generatePDF;
+renderQRCodes();
 </script>
 
 </body>
