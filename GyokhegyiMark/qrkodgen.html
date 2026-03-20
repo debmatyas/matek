@@ -28,7 +28,7 @@ async function loadImageAsDataURL(url) {
 async function generatePDF() {
   const params = new URLSearchParams(window.location.search);
 
-  // Összes data= paraméter összegyűjtése
+  // Több data= paraméter összegyűjtése
   const items = params.getAll("data");
 
   if (items.length === 0) {
@@ -39,22 +39,33 @@ async function generatePDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
-  let y = 10;
+  let y = 20;
 
   for (let i = 0; i < items.length; i++) {
-    const data = decodeURIComponent(items[i].trim());
-    const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(data);
+    const raw = decodeURIComponent(items[i].trim());
+
+    // A név a 3. elem (index 2)
+    const parts = raw.split("|");
+    const name = parts[2] ? parts[2].trim() : "Név ismeretlen";
+
+    const qrUrl =
+      "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
+      encodeURIComponent(raw);
 
     const dataUrl = await loadImageAsDataURL(qrUrl);
 
-    doc.addImage(dataUrl, "PNG", 10, y, 80, 80);
-    doc.text(data, 100, y + 40);
+    // Név kiírása a QR fölé
+    doc.setFontSize(14);
+    doc.text(name, 10, y - 5);
 
-    y += 100;
+    // QR kód
+    doc.addImage(dataUrl, "PNG", 10, y, 80, 80);
+
+    y += 110;
 
     if (y > 260 && i < items.length - 1) {
       doc.addPage();
-      y = 10;
+      y = 20;
     }
   }
 
