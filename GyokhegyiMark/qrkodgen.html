@@ -1,11 +1,56 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-  <meta charset="UTF-8">
-  <title></title>
+<meta charset="UTF-8">
+<title>QR kód generátor</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  .item { margin-bottom: 24px; }
+  .name { font-size: 16px; font-weight: bold; margin-bottom: 6px; }
+  img { width: 200px; height: 200px; }
+</style>
 </head>
 <body>
-<div style="margin-bottom:24px;"><div style="font-size:16px;font-weight:bold;margin-bottom:6px;">Attila</div><img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=M%C3%A1ty%C3%A1s%20Debreceni%7C%2B36%2030%205117575%7CAttila%7C17%7CMise%20el%C5%91tt%7Cnincs" alt="QR kód" style="width:200px;height:200px;" /></div>
-<div style="margin-bottom:24px;"><div style="font-size:16px;font-weight:bold;margin-bottom:6px;">Alma</div><img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=M%C3%A1ty%C3%A1s%20Debreceni%7C%2B36%2030%205117575%7CAlma%7C14%7CMise%20el%C5%91tt%7Ceeper" alt="QR kód" style="width:200px;height:200px;" /></div>
+
+<div id="container"></div>
+
+<script>
+function renderQRCodes() {
+  const params = new URLSearchParams(window.location.search);
+  const items = params.getAll("data");
+
+  const container = document.getElementById("container");
+
+  if (items.length === 0) {
+    container.innerHTML = "<p>Nincs data paraméter.</p>";
+    return;
+  }
+
+  items.forEach(raw => {
+    const decoded = decodeURIComponent(raw.trim());
+    const parts = decoded.split("|");
+
+    // A név a 3. elem (index 2)
+    const name = parts[2] ? parts[2].trim() : "Név ismeretlen";
+
+    const qrUrl =
+      "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
+      encodeURIComponent(decoded);
+
+    const div = document.createElement("div");
+    div.className = "item";
+
+    div.innerHTML = `
+      <div class="name">${name}</div>
+      <img src="${qrUrl}" alt="QR kód">
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+renderQRCodes();
+</script>
+
 </body>
 </html>
