@@ -2,55 +2,74 @@
 <html lang="hu">
 <head>
 <meta charset="UTF-8">
-<title>QR Lista</title>
+<title>QR e-mail HTML generátor</title>
 <style>
   body { font-family: Arial, sans-serif; padding: 20px; }
-  .item { margin-bottom: 40px; }
-  .name { font-size: 20px; font-weight: bold; margin-bottom: 10px; }
-  img { width: 200px; height: 200px; }
+  #preview .item { margin-bottom: 24px; }
+  #preview .name { font-size: 16px; font-weight: bold; margin-bottom: 6px; }
+  #preview img { width: 200px; height: 200px; }
+  #code { width: 100%; height: 250px; font-family: monospace; }
 </style>
 </head>
 <body>
 
-<h1>QR kódok</h1>
-<div id="container"></div>
+<h1>QR e-mail HTML kód</h1>
+<p>Az alábbi kódot másold be az e-mail HTML nézetébe.</p>
+
+<h2>Generált HTML kód</h2>
+<textarea id="code" readonly></textarea>
+
+<h2>Előnézet</h2>
+<div id="preview"></div>
 
 <script>
-function renderQRCodes() {
+function generateEmailHtml() {
   const params = new URLSearchParams(window.location.search);
   const items = params.getAll("data");
 
+  const codeEl = document.getElementById("code");
+  const previewEl = document.getElementById("preview");
+
   if (items.length === 0) {
-    document.getElementById("container").innerHTML = "<p>Nincs data paraméter.</p>";
+    codeEl.value = "<!-- Nincs data paraméter az URL-ben -->";
+    previewEl.innerHTML = "<p>Nincs data paraméter az URL-ben.</p>";
     return;
   }
 
-  const container = document.getElementById("container");
+  let htmlSnippet = "";
 
   items.forEach(raw => {
     const decoded = decodeURIComponent(raw.trim());
     const parts = decoded.split("|");
-
-    // A név a 3. elem (index 2)
     const name = parts[2] ? parts[2].trim() : "Név ismeretlen";
 
     const qrUrl =
       "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
       encodeURIComponent(decoded);
 
+    // HTML, amit majd e-mailbe lehet illeszteni
+    htmlSnippet +=
+      '<div style="margin-bottom:24px;">' +
+        '<div style="font-size:16px;font-weight:bold;margin-bottom:6px;">' +
+          name +
+        "</div>" +
+        '<img src="' + qrUrl + '" alt="QR kód" style="width:200px;height:200px;" />' +
+      "</div>\n";
+
+    // Előnézet
     const div = document.createElement("div");
     div.className = "item";
-
     div.innerHTML = `
       <div class="name">${name}</div>
       <img src="${qrUrl}" alt="QR">
     `;
-
-    container.appendChild(div);
+    previewEl.appendChild(div);
   });
+
+  codeEl.value = htmlSnippet.trim();
 }
 
-renderQRCodes();
+generateEmailHtml();
 </script>
 
 </body>
