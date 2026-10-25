@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mértékegység Átváltás Gyakorló - 10 Feladat</title>
+    <title>Mértékegység Átváltás Gyakorló</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,7 +22,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 550px;
+            max-width: 600px;
         }
         h2 {
             text-align: center;
@@ -45,11 +45,34 @@
         button:hover {
             background-color: #0056b3;
         }
+        /* Nagyobb méret és láthatóság a hatványjeleknél */
+        sup {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .reference-box {
+            background-color: #e9ecef;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            margin: 15px 0;
+            font-size: 15px;
+            color: #333;
+            border: 1px solid #ced4da;
+        }
+        .reference-box strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
         .task-row {
             display: flex;
             flex-direction: column;
             margin-bottom: 12px;
-            padding: 8px 12px;
+            padding: 10px 12px;
             border-radius: 6px;
             background-color: #f8f9fa;
             border: 1px solid #e9ecef;
@@ -62,7 +85,7 @@
             gap: 10px;
         }
         .task-label {
-            font-size: 16px;
+            font-size: 18px; /* Nagyobb betűméret a jobb olvashatóságért */
             font-weight: bold;
             flex: 1;
             white-space: nowrap;
@@ -115,6 +138,9 @@
             <option value="mass">Tömeg</option>
             <option value="capacity">Űrtartalom</option>
         </select>
+        
+        <div id="reference-container" class="reference-box"></div>
+
         <button id="start-btn">Új 10 feladat</button>
         
         <div id="questions-container" style="display:none; margin-top: 20px;">
