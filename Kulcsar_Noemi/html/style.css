@@ -10,6 +10,7 @@
 
 html {
     font-size: 17px;
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -118,7 +119,7 @@ sup {
 /* ===== Törtek almenü ===== */
 .sub-menu {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
     gap: 14px;
     margin: 25px 0;
 }
@@ -162,6 +163,7 @@ input[type="number"] {
 }
 
 select {
+    max-width: 100%;
     width: 100%;
     cursor: pointer;
     margin: 6px 0 10px;
@@ -174,6 +176,8 @@ input:focus {
 }
 
 button {
+    touch-action: manipulation;
+    min-height: 44px;
     padding: 12px 24px;
     font-size: 1rem;
     font-weight: bold;
@@ -271,7 +275,7 @@ button:disabled {
 /* Feladatsorok (átváltás, algebrai átalakítások) */
 #tasks-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
     gap: 14px;
 }
 
@@ -770,44 +774,287 @@ input::-webkit-inner-spin-button {
     text-align: center;
 }
 
-/* ===== Reszponzív finomhangolás ===== */
+/* ===== Telefon / kis kijelző ===== */
 @media (max-width: 700px) {
+    html {
+        font-size: 16px;   /* az input min. 16px, így az iOS nem nagyít rá */
+    }
+
     body {
-        padding: 10px;
+        padding: 8px;
     }
 
     .card,
     .container {
-        padding: 20px 16px;
+        padding: 18px 14px;
+        border-radius: 10px;
+    }
+
+    h1 {
+        font-size: 1.45rem;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+        margin-bottom: 16px;
+    }
+
+    /* Főmenü: egyenletes, könnyen megnyomható gombok két oszlopban */
+    .main-menu {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 18px;
+        padding-bottom: 12px;
     }
 
     .main-menu a {
-        padding: 8px 12px;
+        padding: 12px 6px;
         font-size: 0.9rem;
+        text-align: center;
     }
 
+    .sub-menu {
+        grid-template-columns: 1fr;
+        margin: 16px 0;
+    }
+
+    /* Beállítások egymás alatt, teljes szélességben */
+    .ops,
+    .extra {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .ops label,
+    .extra label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin: 0 !important;
+    }
+
+    .ops select,
+    .extra select {
+        width: 100% !important;
+        margin-top: 6px;
+    }
+
+    input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+    }
+
+    #diffSelect {
+        width: 100% !important;
+        display: block !important;
+        margin-top: 6px;
+    }
+
+    /* Gombok: teljes szélesség, nagy érintési felület */
+    #checkBtn,
+    #nextBtn,
+    #newTask,
+    #restart-btn {
+        width: 100%;
+        margin: 8px 0;
+    }
+
+    /* Kvíz és opciók */
     .options-grid,
     .options-list {
         grid-template-columns: 1fr;
+        gap: 10px;
     }
 
+    .option-btn {
+        padding: 14px;
+        min-height: 54px;
+    }
+
+    .question-container {
+        padding: 14px;
+    }
+
+    .question-title {
+        font-size: 1.1rem;
+    }
+
+    .question {
+        font-size: 1.7rem;
+        margin: 14px 0;
+    }
+
+    #yesBtn,
+    #noBtn {
+        min-width: 0;
+        width: calc(50% - 8px);
+        margin: 6px 4px;
+        padding: 16px 8px;
+        font-size: 1.15rem;
+    }
+
+    /* Feladatsorok (átváltás, algebra) */
     #tasks-list {
         grid-template-columns: 1fr;
+        gap: 10px;
     }
 
-    .grid {
-        gap: 15px;
+    .task-row {
+        padding: 12px;
     }
 
-    .fraction-display {
-        gap: 20px;
+    .task-main {
+        gap: 8px;
     }
 
     .task-label {
         white-space: normal;
+        font-size: 1.05rem;
+        flex: 1 1 50%;
+        min-width: 0;
     }
 
+    .task-input {
+        width: 40%;
+        min-width: 100px;
+    }
+
+    .task-label-box {
+        font-size: 1.15rem;
+        padding: 14px 8px;
+        overflow-x: auto;
+    }
+
+    .solution-box {
+        font-size: 0.95rem;
+        padding: 12px 10px;
+    }
+
+    .reference-box {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    /* Egyenletek */
     .equation-box {
+        font-size: 1.35rem;
+        padding: 20px 8px;
+        overflow-x: auto;
+    }
+
+    #userAnswer {
+        width: 100%;
+    }
+
+    .solution-steps {
+        padding: 14px;
+        font-size: 0.95rem;
+    }
+
+    /* Törtek */
+    .fraction-display {
+        gap: 14px;
+        margin: 16px 0;
+    }
+
+    .frac-show {
+        font-size: 1.8rem;
+        width: 80px;
+    }
+
+    .line-show,
+    .line {
+        width: 80px;
+    }
+
+    .fraction {
+        font-size: 1.15rem;
+        margin: 0 2px;
+    }
+
+    /* Közös nevező: a két tört egymás alatt */
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .cell {
+        max-width: 280px;
+        padding: 12px;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+    }
+
+    .frac-input {
+        width: 100px;
+        height: 48px;
+    }
+
+    .answer-box {
+        gap: 12px;
+    }
+
+    .toggle-btn {
+        min-width: 70px;
+        padding: 12px;
+    }
+
+    /* Síkidomok */
+    .image-box {
+        height: 190px;
+    }
+
+    .calc-input-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .calc-input,
+    .calc-unit-select,
+    .calc-submit {
+        width: 100%;
+    }
+
+    .formula-list {
+        max-height: 60vh;
+        padding: 8px;
+    }
+
+    .formula-item {
+        flex-wrap: wrap;
+        padding: 10px 6px;
+    }
+
+    .result {
+        font-size: 1.05rem;
+    }
+}
+
+/* Nagyon keskeny kijelző (régi / kisméretű telefonok) */
+@media (max-width: 380px) {
+    .main-menu a {
+        font-size: 0.82rem;
+    }
+
+    .frac-show {
         font-size: 1.5rem;
+        width: 64px;
+    }
+
+    .line-show,
+    .line {
+        width: 64px;
+    }
+
+    .task-main {
+        flex-wrap: wrap;
+    }
+
+    .task-input {
+        width: 100%;
     }
 }
