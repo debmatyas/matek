@@ -83,7 +83,6 @@ const shapes = [
         formulaFile: '../img/kor_terulet.png',
         calc: () => {
             let rObj = getRandomLength(2, 8);
-            // Itt most fixen 3.14-gyel számolunk
             let areaCm2 = rObj.cm * rObj.cm * 3.14;
             return { 
                 text: `Mennyi a kör területe, ha a sugara r = ${rObj.val} ${rObj.unit}? (Használd a π ≈ 3.14-et)`, 
@@ -294,9 +293,13 @@ function selectAreaQuizAnswer(selectedBtn, selectedVal) {
     total++;
     const buttons = optionsContainer.querySelectorAll('.option-btn');
     
+    // Lekérjük a képlet fájlnevét a relatív útvonal végéről
+    const cleanFormulaFile = currentShape.formulaFile.split('/').pop();
+    
     buttons.forEach(btn => {
         btn.disabled = true;
-        if (btn.querySelector('img').src.includes(currentShape.formulaFile)) {
+        const img = btn.querySelector('img');
+        if (img && img.src.includes(cleanFormulaFile)) {
             btn.classList.add('correct');
         }
     });
