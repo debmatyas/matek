@@ -1,0 +1,16 @@
+document.addEventListener("DOMContentLoaded", function() {
+    const menuHTML = `
+        <div class="main-menu" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e9ecef; padding-bottom: 15px;">
+            <a href="sikidomok.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Síkidomok</a>
+            <a href="atvaltas.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Mértékegység átváltás</a>
+            <a href="tortek.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Törtek</a>
+            <a href="kviz.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Elméleti Kvíz</a>
+        </div>
+    `;
+
+    // Keresünk egy kijelölt helyet a HTML-ben, ahová beillesztjük a menüt
+    const menuPlaceholder = document.getElementById("main-menu-container");
+    if (menuPlaceholder) {
+        menuPlaceholder.innerHTML = menuHTML;
+    }
+});

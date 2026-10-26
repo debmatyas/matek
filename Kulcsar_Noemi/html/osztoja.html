@@ -11,6 +11,7 @@
       color: white !important;
       border-color: #218838 !important;
     }
+
     .btn-incorrect {
       background-color: #dc3545 !important;
       color: white !important;
@@ -21,18 +22,16 @@
 
 <body>
   <div class="container">
-    <!-- Főmenü -->
-    <div class="main-menu" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e9ecef; padding-bottom: 15px;">
-            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/sikidomok.html">Síkidomok</a>
-            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/atvaltas.html">Mértékegység átváltás</a>
-            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/tortek.html">Törtek</a>
-            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/kviz.html" class="active">Elméleti Kvíz</a>
-    </div>
+    <!-- 1. Főmenü (minden oldalon ott van) -->
+    <div id="main-menu-container"></div>
+
+    <!-- 2. Törtek Almenü (csak ezen a 3 oldalon van ott) -->
+    <div id="tortek-menu-container"></div>
 
     <h1>Osztó-e?</h1>
 
     <div class="ops" style="margin-bottom: 15px; text-align: center;">
-      <label>Nehézség: 
+      <label>Nehézség:
         <select id="difficulty" style="padding: 5px; font-size: 14px;">
           <option value="easy">Könnyebb (1–50)</option>
           <option value="medium">Közepes (1–150)</option>
@@ -142,7 +141,7 @@
       let digitSum = sumOfDigits(a);
       let isEven = (a % 2 === 0);
 
-      switch(divisor) {
+      switch (divisor) {
         case 2:
           return `Helytelen! A helyes válasz Igen volt, mert a szám páros (${a}).`;
         case 3:
@@ -171,7 +170,7 @@
       let lastTwoDigits = a % 100;
       let digitSum = sumOfDigits(a);
 
-      switch(divisor) {
+      switch (divisor) {
         case 2:
           return `Helytelen! A helyes válasz Nem volt, mert a szám páratlan (${a}).`;
         case 3:
@@ -198,7 +197,7 @@
 
       bad++;
       badEl.textContent = bad;
-      
+
       const correct = (a % b === 0);
       resultEl.textContent = correct ? getExplanationIfShouldBeYes(b) : `Letelt az idő! A helyes válasz: ${correct ? 'Igen' : 'Nem'}`;
       resultEl.className = "result wrong";
@@ -243,7 +242,7 @@
         good++;
         goodEl.textContent = good;
         resultEl.className = "result correct";
-        
+
         if (isYes) yesBtn.classList.add('btn-correct');
         else noBtn.classList.add('btn-correct');
 
@@ -251,7 +250,7 @@
       } else {
         bad++;
         badEl.textContent = bad;
-        
+
         // Itt döntjük el, hogy melyik irányú hiba történt
         if (correct) {
           // Igen helyett Nem lett válaszolva
@@ -260,7 +259,7 @@
           // Nem helyett Igen lett válaszolva
           resultEl.textContent = getExplanationIfShouldBeNo(b);
         }
-        
+
         resultEl.className = "result wrong";
         highlightButtons(correct);
       }
@@ -275,7 +274,8 @@
 
     newQuestion();
   </script>
-
+  <script src="../js/menu.js"></script>
+  <script src="../js/tortek_menu.js"></script>
 </body>
 
 </html>

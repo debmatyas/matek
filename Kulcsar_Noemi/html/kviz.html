@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +17,7 @@
             padding: 20px;
             box-sizing: border-box;
         }
+
         .card {
             background: white;
             padding: 30px;
@@ -24,6 +26,7 @@
             width: 100%;
             max-width: 750px;
         }
+
         /* Főmenü */
         .main-menu {
             display: flex;
@@ -33,6 +36,7 @@
             border-bottom: 2px solid #e9ecef;
             padding-bottom: 15px;
         }
+
         .main-menu a {
             text-decoration: none;
             padding: 8px 16px;
@@ -44,10 +48,12 @@
             border-radius: 5px;
             transition: all 0.2s;
         }
+
         .main-menu a:hover {
             background-color: #e2e6ea;
             color: #007bff;
         }
+
         .main-menu a.active {
             background-color: #007bff;
             color: white;
@@ -59,6 +65,7 @@
             color: #333;
             margin-top: 0;
         }
+
         .question-container {
             margin-bottom: 20px;
             background: #f8f9fa;
@@ -66,17 +73,20 @@
             border-radius: 8px;
             border: 1px solid #e9ecef;
         }
+
         .question-title {
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 15px;
             color: #212529;
         }
+
         .options-list {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
+
         .option-btn {
             background-color: white;
             border: 1px solid #ced4da;
@@ -87,21 +97,25 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+
         .option-btn:hover:not(:disabled) {
             background-color: #e2e6ea;
             border-color: #b1b7bc;
         }
+
         .option-btn.correct {
             background-color: #d4edda !important;
             border-color: #c3e6cb !important;
             color: #155724;
             font-weight: bold;
         }
+
         .option-btn.incorrect {
             background-color: #f8d7da !important;
             border-color: #f5c6cb !important;
             color: #721c24;
         }
+
         .formula {
             display: inline-block;
             background: #e9ecef;
@@ -112,6 +126,7 @@
             color: #007bff;
             font-size: 16px;
         }
+
         #next-btn {
             background-color: #007bff;
             color: white;
@@ -125,17 +140,21 @@
             margin-top: 15px;
             display: none;
         }
+
         #next-btn:hover {
             background-color: #0056b3;
         }
+
         #result-card {
             text-align: center;
             display: none;
         }
+
         #result-card h3 {
             font-size: 24px;
             color: #28a745;
         }
+
         .progress-info {
             font-size: 14px;
             color: #6c757d;
@@ -144,15 +163,12 @@
         }
     </style>
 </head>
+
 <body>
     <div class="card">
         <!-- Főmenü -->
-        <div class="main-menu">
-            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/sikidomok.html">Síkidomok</a>
-            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/atvaltas.html">Mértékegység átváltás</a>
-            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/tortek.html">Törtek</a>
-            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/kviz.html" class="active">Elméleti Kvíz</a>
-        </div>
+        <div id="main-menu-container"></div>
+
 
         <h2>Matematika Elméleti Kvíz</h2>
 
@@ -168,7 +184,8 @@
         <div id="result-card">
             <h3>Gratulálok, a kvíz véget ért!</h3>
             <p id="score-text" style="font-size: 18px; font-weight: bold; margin: 20px 0;"></p>
-            <button id="restart-btn" style="background-color: #28a745; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 6px; cursor: pointer;">Újrakezdés</button>
+            <button id="restart-btn"
+                style="background-color: #28a745; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 6px; cursor: pointer;">Újrakezdés</button>
         </div>
     </div>
 
@@ -400,7 +417,7 @@
             quizData.forEach(q => {
                 let optionsWithIndex = q.options.map((opt, idx) => ({ text: opt, originalIndex: idx }));
                 optionsWithIndex.sort(() => Math.random() - 0.5);
-                
+
                 q.options = optionsWithIndex.map(item => item.text);
                 q.correct = optionsWithIndex.findIndex(item => item.originalIndex === q.correct);
             });
@@ -409,7 +426,7 @@
         function loadQuestion() {
             answered = false;
             nextBtn.style.display = 'none';
-            
+
             const q = quizData[currentQuestion];
             progressInfoEl.textContent = `Kérdés: ${currentQuestion + 1} / ${quizData.length}`;
             questionTextEl.innerHTML = q.question;
@@ -472,5 +489,7 @@
         shuffleQuiz();
         loadQuestion();
     </script>
+    <script src="../js/menu.js"></script>
 </body>
+
 </html>

@@ -9,18 +9,17 @@
 
 <body>
   <div class="container">
-    <!-- Főmenü -->
-    <div class="main-menu" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e9ecef; padding-bottom: 15px;">
-            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/sikidomok.html">Síkidomok</a>
-            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/atvaltas.html">Mértékegység átváltás</a>
-            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/tortek.html">Törtek</a>
-            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/kviz.html" class="active">Elméleti Kvíz</a>
-    </div>
+
+    <!-- 1. Főmenü (minden oldalon ott van) -->
+    <div id="main-menu-container"></div>
+
+    <!-- 2. Törtek Almenü (csak ezen a 3 oldalon van ott) -->
+    <div id="tortek-menu-container"></div>
 
     <h1>Add meg a közös nevezőt!</h1>
 
     <div class="ops" style="margin-bottom: 15px; text-align: center;">
-      <label>Nehézség: 
+      <label>Nehézség:
         <select id="difficulty" style="padding: 5px; font-size: 14px;">
           <option value="easy">Könnyebb (nevezők 2–12)</option>
           <option value="medium">Közepes (nevezők 2–50)</option>
@@ -267,6 +266,8 @@
 
     newTask();
   </script>
+  <script src="../js/menu.js"></script>
+  <script src="../js/tortek_menu.js"></script>
 </body>
 
 </html>

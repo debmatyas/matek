@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +17,7 @@
             padding: 20px;
             box-sizing: border-box;
         }
+
         .card {
             background: white;
             padding: 30px;
@@ -25,6 +27,7 @@
             max-width: 560px;
             text-align: center;
         }
+
         /* Főmenü stílusa */
         .main-menu {
             display: flex;
@@ -34,6 +37,7 @@
             border-bottom: 2px solid #e9ecef;
             padding-bottom: 15px;
         }
+
         .main-menu a {
             text-decoration: none;
             padding: 8px 16px;
@@ -45,10 +49,12 @@
             border-radius: 5px;
             transition: all 0.2s;
         }
+
         .main-menu a:hover {
             background-color: #e2e6ea;
             color: #007bff;
         }
+
         .main-menu a.active {
             background-color: #007bff;
             color: white;
@@ -59,9 +65,11 @@
             margin-top: 0;
             color: #333;
         }
+
         .mode-selector {
             margin-bottom: 20px;
         }
+
         select {
             width: 100%;
             padding: 10px;
@@ -71,6 +79,7 @@
             background-color: #fff;
             cursor: pointer;
         }
+
         .image-box {
             margin: 20px 0;
             display: flex;
@@ -82,11 +91,13 @@
             border-radius: 8px;
             overflow: hidden;
         }
+
         #shapeImage {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
         }
+
         .question-text {
             font-size: 16px;
             font-weight: bold;
@@ -94,12 +105,14 @@
             color: #495057;
             line-height: 1.5;
         }
+
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-bottom: 20px;
         }
+
         .option-btn {
             padding: 12px 8px;
             font-size: 16px;
@@ -113,16 +126,19 @@
             justify-content: center;
             min-height: 50px;
         }
+
         .option-btn:hover:not(:disabled) {
             background-color: #e2e6ea;
             border-color: #adb5bd;
         }
+
         .option-btn.correct {
             background-color: #d4edda !important;
             border-color: #c3e6cb !important;
             color: #155724;
             font-weight: bold;
         }
+
         .option-btn.incorrect {
             background-color: #f8d7da !important;
             border-color: #f5c6cb !important;
@@ -137,6 +153,7 @@
             justify-content: center;
             align-items: center;
         }
+
         .calc-input {
             padding: 10px;
             font-size: 16px;
@@ -145,6 +162,7 @@
             border-radius: 5px;
             text-align: center;
         }
+
         .calc-unit-select {
             padding: 10px;
             font-size: 16px;
@@ -154,6 +172,7 @@
             background-color: #fff;
             cursor: pointer;
         }
+
         .calc-submit {
             padding: 10px 16px;
             font-size: 16px;
@@ -163,6 +182,7 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
         .calc-submit:hover {
             background-color: #218838;
         }
@@ -177,16 +197,18 @@
             cursor: pointer;
             width: 100%;
         }
+
         #next-btn:hover {
             background-color: #0056b3;
         }
+
         #score-container {
             font-size: 16px;
             font-weight: bold;
             color: #333;
             margin-top: 15px;
         }
-        
+
         /* Képlet gyűjtemény stílusa */
         .formula-list {
             display: none;
@@ -198,6 +220,7 @@
             padding: 10px;
             background-color: #f8f9fa;
         }
+
         .formula-item {
             display: flex;
             align-items: center;
@@ -205,27 +228,26 @@
             padding: 10px;
             border-bottom: 1px solid #dee2e6;
         }
+
         .formula-item:last-child {
             border-bottom: none;
         }
+
         .formula-name {
             font-weight: bold;
             color: #495057;
         }
     </style>
 </head>
+
 <body>
     <div class="card">
         <!-- Főmenü -->
-        <div class="main-menu">
-            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/sikidomok.html" class="active">Síkidomok</a>
-            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/atvaltas.html">Mértékegység átváltás</a>
-            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/tortek.html">Törtek</a>
-            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/kviz.html">Elméleti Kvíz</a>
-        </div>
+        <div id="main-menu-container"></div>
+
 
         <h2>Síkidom Gyakorló</h2>
-        
+
         <div class="mode-selector">
             <select id="modeSelect">
                 <option value="recognition">Síkidomfelismerés</option>
@@ -234,21 +256,22 @@
                 <option value="formula_guide">Területképletek gyűjteménye</option>
             </select>
         </div>
-        
+
         <!-- Kvíz / Számolós nézet -->
         <div id="quiz-container">
             <div class="image-box">
                 <img id="shapeImage" src="" alt="Síkidom">
             </div>
-            
+
             <p id="questionText" class="question-text"></p>
-            
+
             <!-- Kvíz gombok -->
             <div id="options-container" class="options-grid"></div>
 
             <!-- Számolós beviteli mező és mértékegység választó -->
             <div id="calc-container" class="calc-input-container" style="display: none;">
-                <input type="number" id="calcInput" class="calc-input" placeholder="Érték..." step="any" autocomplete="off">
+                <input type="number" id="calcInput" class="calc-input" placeholder="Érték..." step="any"
+                    autocomplete="off">
                 <select id="calcUnitSelect" class="calc-unit-select">
                     <option value="0.01">mm²</option>
                     <option value="1" selected>cm²</option>
@@ -265,10 +288,12 @@
         <div id="score-container">
             Pontszám: <span id="score">0</span> / <span id="total">0</span>
         </div>
-        
+
         <button id="next-btn" style="display:none;">Következő feladat</button>
     </div>
 
     <script src="../js/sikidomok.js"></script>
+    <script src="../js/menu.js"></script>
 </body>
+
 </html>
