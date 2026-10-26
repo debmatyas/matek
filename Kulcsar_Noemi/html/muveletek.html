@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Törtes műveletek gyakorlása</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+  <div class="container">
+    <!-- Főmenü (html mappán belüli linkekkel) -->
+    <div class="main-menu" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e9ecef; padding-bottom: 15px;">
+      <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/sikidomok.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Síkidomok</a>
+      <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/atvaltas.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Mértékegység átváltás</a>
+      <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/tortek.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Törtek</a>
+    </div>
+
+    <h1>Törtes műveletek gyakorlása</h1>
+
+    <div class="ops">
+      <label><input type="checkbox" id="add" checked> + </label>
+      <label><input type="checkbox" id="sub" checked> − </label>
+      <label><input type="checkbox" id="mul" checked> × </label>
+      <label><input type="checkbox" id="div" checked> ÷ </label>
+    </div>
+
+    <div class="extra" style="margin-top: 10px;">
+      <label><input type="checkbox" id="sameDen"> Azonos nevező</label>
+      <label style="margin-left: 15px;">Nehézség: 
+        <select id="difficulty" style="padding: 3px; font-size: 14px;">
+          <option value="easy">Könnyebb (nevezők 2–10)</option>
+          <option value="medium">Közepes (nevezők 2–50)</option>
+          <option value="hard">Nehezebb (nevezők 1–300 szép számok)</option>
+        </select>
+      </label>
+    </div>
+
+    <button id="newTask">Új feladat</button>
+
+    <div class="fraction-display">
+      <div class="frac-show">
+        <div id="aNum">?</div>
+        <div class="line-show"></div>
+        <div id="aDen">?</div>
+      </div>
+
+      <div id="opSymbol" style="font-size:30px; margin-top:25px;">?</div>
+
+      <div class="frac-show">
+        <div id="bNum">?</div>
+        <div class="line-show"></div>
+        <div id="bDen">?</div>
+      </div>
+    </div>
+
+    <div class="answer-box">
+      <button id="toggleType" class="toggle-btn">Tört</button>
+
+      <div id="answerFraction">
+        <input type="number" id="ansNum" class="frac-input">
+        <div class="line"></div>
+        <input type="number" id="ansDen" class="frac-input">
+      </div>
+
+      <input type="number" id="ansInt" class="frac-input" style="display:none;">
+    </div>
+
+    <button id="checkBtn">Ellenőrzés</button>
+    <button id="nextBtn" style="display:none;">Következő</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    const aNum = document.getElementById("aNum");
+    const aDen = document.getElementById("aDen");
+    const bNum = document.getElementById("bNum");
+    const bDen = document.getElementById("bDen");
+    const opSymbol = document.getElementById("opSymbol");
+
+    const ansNum = document.getElementById("ansNum");
+    const ansDen = document.getElementById("ansDen");
+    const ansInt = document.getElementById("ansInt");
+
+    const checkBtn = document.getElementById("checkBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const resultEl = document.getElementById("result");
+    const difficultyEl = document.getElementById("difficulty");
+
+    let currentOp = null;
+    let a, b, c, d;
+    let correctNum, correctDen;
+    let attempts = 0;
+
+    function gcd(x, y) {
+      while (y !== 0) {
+        let t = y;
+        y = x % y;
+        x = t;
+      }
+      return x;
+    }
+
+    function simplify(n, d) {
+      let g = gcd(n, d);
+      return [n / g, d / g];
+    }
+
+    function generateFraction() {
+      const diff = difficultyEl.value;
+      let maxDen = 10;
+      if (diff === 'medium') maxDen = 50;
+      if (diff === 'hard') maxDen = 300;
+
+      let den, num;
+      if (diff === 'hard') {
+        const niceDenominators = [2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50, 60, 75, 100, 150, 200, 300];
+        den = niceDenominators[Math.floor(Math.random() * niceDenominators.length)];
+        num = Math.floor(Math.random() * (den - 1)) + 1;
+      } else {
+        den = Math.floor(Math.random() * (maxDen - 1)) + 2;
+        num = Math.floor(Math.random() * (den - 1)) + 1;
+      }
+      return [num, den];
+    }
+
+    function pickOperation() {
+      let ops = [];
+      if (document.getElementById("add").checked) ops.push("+");
+      if (document.getElementById("sub").checked) ops.push("-");
+      if (document.getElementById("mul").checked) ops.push("×");
+      if (document.getElementById("div").checked) ops.push("÷");
+
+      if (ops.length === 0) return null;
+      return ops[Math.floor(Math.random() * ops.length)];
+    }
+
+    function newTask() {
+      resultEl.textContent = "";
+      attempts = 0;
+      nextBtn.style.display = "none";
+
+      currentOp = pickOperation();
+      if (!currentOp) {
+        resultEl.textContent = "Válassz ki legalább egy műveletet!";
+        return;
+      }
+
+      const sameDen = document.getElementById("sameDen").checked;
+      const diff = difficultyEl.value;
+
+      do {
+        if (sameDen) {
+          let maxDen = diff === 'hard' ? 300 : (diff === 'medium' ? 50 : 10);
+          let den = Math.floor(Math.random() * (maxDen - 1)) + 2;
+          a = Math.floor(Math.random() * (den - 1)) + 1;
+          b = den;
+          c = Math.floor(Math.random() * (den - 1)) + 1;
+          d = den;
+        } else {
+          [a, b] = generateFraction();
+          [c, d] = generateFraction();
+        }
+
+        let tempNum, tempDen;
+
+        if (currentOp === "+") {
+          tempNum = a * d + c * b;
+          tempDen = b * d;
+        }
+        if (currentOp === "-") {
+          tempNum = a * d - c * b;
+          tempDen = b * d;
+        }
+        if (currentOp === "×") {
+          tempNum = a * c;
+          tempDen = b * d;
+        }
+        if (currentOp === "÷") {
+          tempNum = a * d;
+          tempDen = b * c;
+        }
+
+        [tempNum, tempDen] = simplify(tempNum, tempDen);
+
+        if (diff === 'hard' && tempDen > 300) continue;
+
+        if (tempNum >= 0) {
+          correctNum = tempNum;
+          correctDen = tempDen;
+          break;
+        }
+
+      } while (true);
+
+      aNum.textContent = a;
+      aDen.textContent = b;
+      bNum.textContent = c;
+      bDen.textContent = d;
+      opSymbol.textContent = currentOp;
+
+      ansNum.value = "";
+      ansDen.value = "";
+      ansInt.value = "";
+    }
+
+    document.getElementById("newTask").onclick = newTask;
+    difficultyEl.onchange = newTask;
+
+    document.getElementById("toggleType").onclick = () => {
+      if (ansInt.style.display === "none") {
+        ansInt.style.display = "block";
+        document.getElementById("answerFraction").style.display = "none";
+        document.getElementById("toggleType").textContent = "Egész";
+      } else {
+        ansInt.style.display = "none";
+        document.getElementById("answerFraction").style.display = "flex";
+        document.getElementById("toggleType").textContent = "Tört";
+      }
+    };
+
+    function isCorrectFraction(uNum, uDen) {
+      if (uNum === 0) return correctNum === 0;
+      let [sNum, sDen] = simplify(uNum, uDen);
+      return sNum === correctNum && sDen === correctDen;
+    }
+
+    function checkAnswer() {
+      attempts++;
+
+      if (ansInt.style.display === "block") {
+        if (Number(ansInt.value) === correctNum / correctDen) {
+          resultEl.textContent = "Helyes!";
+          resultEl.className = "result correct";
+          nextBtn.style.display = "inline-block";
+        } else {
+          if (attempts < 3) {
+            resultEl.textContent = "Nem jó, próbáld újra!";
+            resultEl.className = "result wrong";
+          } else {
+            resultEl.textContent = `Helyes eredmény: ${correctNum}/${correctDen}`;
+            resultEl.className = "result wrong";
+            nextBtn.style.display = "inline-block";
+          }
+        }
+        return;
+      }
+
+      let uNum = Number(ansNum.value);
+      let uDen = Number(ansDen.value);
+
+      if (!uDen && uNum !== 0) {
+        resultEl.textContent = "Tölts ki minden mezőt!";
+        resultEl.className = "result wrong";
+        return;
+      }
+
+      if (isCorrectFraction(uNum, uDen)) {
+        resultEl.textContent = "Helyes!";
+        resultEl.className = "result correct";
+        nextBtn.style.display = "inline-block";
+      } else {
+        if (attempts < 3) {
+          resultEl.textContent = "Nem jó, próbáld újra!";
+          resultEl.className = "result wrong";
+        } else {
+          resultEl.textContent = `Helyes eredmény: ${correctNum}/${correctDen}`;
+          resultEl.className = "result wrong";
+          nextBtn.style.display = "inline-block";
+        }
+      }
+    }
+
+    checkBtn.onclick = checkAnswer;
+    nextBtn.onclick = newTask;
+
+    ansNum.addEventListener("keydown", e => { if (e.key === "Enter") checkAnswer(); });
+    ansDen.addEventListener("keydown", e => { if (e.key === "Enter") checkAnswer(); });
+    ansInt.addEventListener("keydown", e => { if (e.key === "Enter") checkAnswer(); });
+
+    newTask();
+  </script>
+</body>
+</html>

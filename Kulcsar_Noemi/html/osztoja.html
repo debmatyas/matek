@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Osztó-e gyakorló</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .btn-correct {
+      background-color: #28a745 !important;
+      color: white !important;
+      border-color: #218838 !important;
+    }
+    .btn-incorrect {
+      background-color: #dc3545 !important;
+      color: white !important;
+      border-color: #c82333 !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Főmenü -->
+    <div class="main-menu" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e9ecef; padding-bottom: 15px;">
+      <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/sikidomok.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Síkidomok</a>
+      <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/atvaltas.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Mértékegység átváltás</a>
+      <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/tortek.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Törtek</a>
+    </div>
+
+    <h1>Osztó-e?</h1>
+
+    <div class="ops" style="margin-bottom: 15px; text-align: center;">
+      <label>Nehézség: 
+        <select id="difficulty" style="padding: 5px; font-size: 14px;">
+          <option value="easy">Könnyebb (1–50)</option>
+          <option value="medium">Közepes (1–150)</option>
+          <option value="hard">Nehezebb (1–300)</option>
+        </select>
+      </label>
+    </div>
+
+    <div id="question" class="question">?</div>
+
+    <button id="yesBtn">Igen</button>
+    <button id="noBtn">Nem</button>
+
+    <div class="timer" id="timer">Hátralévő idő: 10 mp</div>
+
+    <div class="result" id="result"></div>
+
+    <button id="newTask">Új feladat</button>
+
+    <div class="stats">
+      Helyes: <span id="good">0</span> |
+      Rossz: <span id="bad">0</span>
+    </div>
+  </div>
+
+  <script>
+    const questionEl = document.getElementById("question");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const resultEl = document.getElementById("result");
+    const goodEl = document.getElementById("good");
+    const badEl = document.getElementById("bad");
+    const timerEl = document.getElementById("timer");
+    const difficultyEl = document.getElementById("difficulty");
+
+    let a, b;
+    let good = 0;
+    let bad = 0;
+    let timeLeft = 10;
+    let timerInterval;
+    let lockInput = false;
+    let autoNext;
+
+    const possibleDivisors = [2, 3, 4, 5, 6, 9, 10, 100];
+
+    function rag(number) {
+      const special = number % 100;
+      const last = number % 10;
+      if ([1, 2, 4, 5, 7, 9].includes(last) || [10, 40, 50, 70, 80].includes(special)) return "nek";
+      return "nak";
+    }
+
+    function resetButtons() {
+      yesBtn.className = "";
+      noBtn.className = "";
+    }
+
+    function newQuestion() {
+      lockInput = false;
+      resetButtons();
+
+      clearInterval(timerInterval);
+      clearInterval(autoNext);
+
+      const diff = difficultyEl.value;
+      let limitA = 50;
+
+      if (diff === 'medium') {
+        limitA = 150;
+      } else if (diff === 'hard') {
+        limitA = 300;
+      }
+
+      timeLeft = diff === 'hard' ? 15 : 10;
+      timerEl.textContent = `Hátralévő idő: ${timeLeft} mp`;
+
+      a = Math.floor(Math.random() * limitA) + 2;
+      b = possibleDivisors[Math.floor(Math.random() * possibleDivisors.length)];
+
+      questionEl.textContent = `${a}-${rag(a)} osztója ${b}?`;
+
+      resultEl.textContent = "";
+      resultEl.className = "result";
+
+      timerInterval = setInterval(countdown, 1000);
+    }
+
+    function countdown() {
+      timeLeft--;
+      timerEl.textContent = `Hátralévő idő: ${timeLeft} mp`;
+
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        handleTimeout();
+      }
+    }
+
+    // Segédfüggvény a számjegyeid összegének lekéréséhez
+    function sumOfDigits(num) {
+      return num.toString().split('').reduce((acc, digit) => acc + parseInt(digit), 0);
+    }
+
+    // Magyarázat generálása, ha IGAZ helyett NEM-et választott (mert az osztója lett volna)
+    function getExplanationIfShouldBeYes(divisor) {
+      let lastDigit = a % 10;
+      let lastTwoDigits = a % 100;
+      let digitSum = sumOfDigits(a);
+      let isEven = (a % 2 === 0);
+
+      switch(divisor) {
+        case 2:
+          return `Helytelen! A helyes válasz Igen volt, mert a szám páros (${a}).`;
+        case 3:
+          return `Helytelen! A helyes válasz Igen volt, mert a szám számjegyeinek összege (${digitSum}) osztható 3-al.`;
+        case 4:
+          return `Helytelen! A helyes válasz Igen volt, mert a szám utolsó két számjegyéből álló kétjegyű szám (${lastTwoDigits}) osztható 4-gyel.`;
+        case 5:
+          let zeroOrFive = (lastDigit === 0 || lastDigit === 5) ? lastDigit : (lastDigit === 0 ? 0 : 5);
+          return `Helytelen! A helyes válasz Igen volt, mert a szám utolsó számjegye ${zeroOrFive} (${a}).`;
+        case 6:
+          return `Helytelen! A helyes válasz Igen volt, mert a szám számjegyeinek összege (${digitSum}) osztható 3-al és a szám páros.`;
+        case 9:
+          return `Helytelen! A helyes válasz Igen volt, mert a számjegyeinek összege (${digitSum}) osztható 9-cel.`;
+        case 10:
+          return `Helytelen! A helyes válasz Igen volt, mert a szám utolsó számjegye 0 (${a}).`;
+        case 100:
+          return `Helytelen! A helyes válasz Igen volt, mert a szám utolsó két számjegye 0 (${a}).`;
+        default:
+          return `Helytelen! A helyes válasz Igen volt.`;
+      }
+    }
+
+    // Magyarázat generálása, ha NEM helyett IGAZ választ adott (mert nem az osztója)
+    function getExplanationIfShouldBeNo(divisor) {
+      let lastDigit = a % 10;
+      let lastTwoDigits = a % 100;
+      let digitSum = sumOfDigits(a);
+
+      switch(divisor) {
+        case 2:
+          return `Helytelen! A helyes válasz Nem volt, mert a szám páratlan (${a}).`;
+        case 3:
+          return `Helytelen! A helyes válasz Nem volt, mert a szám számjegyeinek összege (${digitSum}) nem osztható 3-al.`;
+        case 4:
+          return `Helytelen! A helyes válasz Nem volt, mert a szám utolsó két számjegyéből álló kétjegyű szám (${lastTwoDigits}) nem osztható 4-gyel.`;
+        case 5:
+          return `Helytelen! A helyes válasz Nem volt, mert a szám utolsó számjegye nem 0 és nem 5, hanem ${lastDigit} (${a}).`;
+        case 6:
+          return `Helytelen! A helyes válasz Nem volt, mert a szám nem felel meg a 6-os oszthatósági szabálynak (vagy nem páros, vagy a számjegyek összege nem osztható 3-al).`;
+        case 9:
+          return `Helytelen! A helyes válasz Nem volt, mert a számjegyeinek összege (${digitSum}) nem osztható 9-cel.`;
+        case 10:
+          return `Helytelen! A helyes válasz Nem volt, mert a szám utolsó számjegye nem 0, hanem ${lastDigit} (${a}).`;
+        case 100:
+          return `Helytelen! A helyes válasz Nem volt, mert a szám utolsó két számjegye nem 0 (${a}).`;
+        default:
+          return `Helytelen! A helyes válasz Nem volt.`;
+      }
+    }
+
+    function handleTimeout() {
+      if (lockInput) return;
+
+      bad++;
+      badEl.textContent = bad;
+      
+      const correct = (a % b === 0);
+      resultEl.textContent = correct ? getExplanationIfShouldBeYes(b) : `Letelt az idő! A helyes válasz: ${correct ? 'Igen' : 'Nem'}`;
+      resultEl.className = "result wrong";
+
+      highlightButtons(correct ? true : false);
+      lockInput = true;
+    }
+
+    function highlightButtons(correctIsYes) {
+      if (correctIsYes) {
+        yesBtn.classList.add('btn-correct');
+        noBtn.classList.add('btn-incorrect');
+      } else {
+        noBtn.classList.add('btn-correct');
+        yesBtn.classList.add('btn-incorrect');
+      }
+    }
+
+    function startAutoNext() {
+      let left = 3;
+      resultEl.textContent = `Helyes! Új feladat ${left} mp múlva...`;
+
+      autoNext = setInterval(() => {
+        left--;
+        resultEl.textContent = `Helyes! Új feladat ${left} mp múlva...`;
+
+        if (left <= 0) {
+          clearInterval(autoNext);
+          newQuestion();
+        }
+      }, 1000);
+    }
+
+    function checkAnswer(isYes) {
+      if (lockInput) return;
+
+      clearInterval(timerInterval);
+
+      const correct = (a % b === 0);
+
+      if (isYes === correct) {
+        good++;
+        goodEl.textContent = good;
+        resultEl.className = "result correct";
+        
+        if (isYes) yesBtn.classList.add('btn-correct');
+        else noBtn.classList.add('btn-correct');
+
+        startAutoNext();
+      } else {
+        bad++;
+        badEl.textContent = bad;
+        
+        // Itt döntjük el, hogy melyik irányú hiba történt
+        if (correct) {
+          // Igen helyett Nem lett válaszolva
+          resultEl.textContent = getExplanationIfShouldBeYes(b);
+        } else {
+          // Nem helyett Igen lett válaszolva
+          resultEl.textContent = getExplanationIfShouldBeNo(b);
+        }
+        
+        resultEl.className = "result wrong";
+        highlightButtons(correct);
+      }
+
+      lockInput = true;
+    }
+
+    yesBtn.onclick = () => checkAnswer(true);
+    noBtn.onclick = () => checkAnswer(false);
+    document.getElementById("newTask").onclick = newQuestion;
+    difficultyEl.onchange = newQuestion;
+
+    newQuestion();
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Közös nevező gyakorló</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="container">
+    <!-- Főmenü -->
+    <div class="main-menu" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e9ecef; padding-bottom: 15px;">
+      <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/sikidomok.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Síkidomok</a>
+      <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/atvaltas.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Mértékegység átváltás</a>
+      <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/tortek.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Törtek</a>
+    </div>
+
+    <h1>Add meg a közös nevezőt!</h1>
+
+    <div class="ops" style="margin-bottom: 15px; text-align: center;">
+      <label>Nehézség: 
+        <select id="difficulty" style="padding: 5px; font-size: 14px;">
+          <option value="easy">Könnyebb (nevezők 2–12)</option>
+          <option value="medium">Közepes (nevezők 2–50)</option>
+          <option value="hard">Nehezebb (nevezők 1–300-ig tiszta számok)</option>
+        </select>
+      </label>
+    </div>
+
+    <!-- Eredeti törtek: A1 és B1 -->
+    <div class="fraction-display">
+      <div class="frac-show">
+        <div id="showNum1">?</div>
+        <div class="line-show"></div>
+        <div id="showDen1">?</div>
+      </div>
+
+      <div class="frac-show">
+        <div id="showNum2">?</div>
+        <div class="line-show"></div>
+        <div id="showDen2">?</div>
+      </div>
+    </div>
+
+    <!-- Felhasználó bevitele: A2 és B2 -->
+    <div class="grid">
+      <div class="cell">
+        <div class="row">
+          <div class="label-left">Számláló</div>
+          <input type="number" id="num1" class="frac-input">
+        </div>
+        <div class="line input_line"></div>
+        <div class="row">
+          <div class="label-left">Nevező</div>
+          <input type="number" id="den1" class="frac-input">
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="row">
+          <div class="label-left">Számláló</div>
+          <input type="number" id="num2" class="frac-input">
+        </div>
+        <div class="line input_line"></div>
+        <div class="row">
+          <div class="label-left">Nevező</div>
+          <input type="number" id="den2" class="frac-input">
+        </div>
+      </div>
+    </div>
+
+    <button id="checkBtn">Ellenőrzés</button>
+    <button id="nextBtn">Következő feladat</button>
+
+    <div class="result" id="result"></div>
+
+    <div class="stats">
+      Helyes: <span id="good">0</span> |
+      Rossz: <span id="bad">0</span>
+    </div>
+  </div>
+
+  <script>
+    const showNum1 = document.getElementById('showNum1');
+    const showDen1 = document.getElementById('showDen1');
+    const showNum2 = document.getElementById('showNum2');
+    const showDen2 = document.getElementById('showDen2');
+
+    const num1El = document.getElementById('num1');
+    const den1El = document.getElementById('den1');
+    const num2El = document.getElementById('num2');
+    const den2El = document.getElementById('den2');
+
+    const resultEl = document.getElementById('result');
+    const goodEl = document.getElementById('good');
+    const badEl = document.getElementById('bad');
+    const difficultyEl = document.getElementById('difficulty');
+
+    // A1 = a/b, B1 = c/d
+    let a, b, c, d;
+    let newNum1, newNum2, commonDen;
+    let good = 0;
+    let bad = 0;
+    let attempts = 0;
+
+    function gcd(x, y) {
+      while (y !== 0) {
+        let t = y;
+        y = x % y;
+        x = t;
+      }
+      return Math.abs(x);
+    }
+
+    function lcm(x, y) {
+      return (x * y) / gcd(x, y);
+    }
+
+    // Számok választása súlyozott gyakorisággal
+    function pickSmartDenominator(maxVal) {
+      // Gyakori, könnyen osztható "barátságos" számok gyűjteménye
+      const friendlyMedium = [2, 3, 4, 5, 6, 8, 10, 12, 15, 16, 20, 24, 25, 30, 36, 40, 48, 50];
+      const friendlyHard = [60, 72, 75, 80, 90, 100, 120, 150, 180, 200, 240, 250, 300];
+
+      let pool = [];
+
+      if (maxVal <= 12) {
+        // Könnyű szint: 2..12
+        pool = [2, 3, 4, 5, 6, 8, 10, 12];
+      } else if (maxVal <= 50) {
+        // Közepes szint: 80% eséllyel a szép számokból választunk
+        if (Math.random() < 0.8) {
+          pool = friendlyMedium;
+        } else {
+          return Math.floor(Math.random() * 49) + 2; // 2..50 véletlen
+        }
+      } else {
+        // Nehéz szint (300-ig): 85% eséllyel a szép/gyakori számokból
+        if (Math.random() < 0.85) {
+          pool = [...friendlyMedium, ...friendlyHard];
+        } else {
+          // Ha véletlenszerű, akkor is 5 vagy 10 többszörösére kerekítünk a 300-as sávban
+          let randStep = Math.floor(Math.random() * 58) + 2; // 2..60
+          return randStep * 5; // 10, 15, ..., 300
+        }
+      }
+
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function generateFraction() {
+      const diff = difficultyEl.value;
+      let maxDen = 12;
+      if (diff === 'medium') maxDen = 50;
+      if (diff === 'hard') maxDen = 300;
+
+      const den = pickSmartDenominator(maxDen);
+      // A számláló kisebb legyen a nevezőnél
+      const num = Math.floor(Math.random() * (den - 1)) + 1;
+      return [num, den];
+    }
+
+    function newTask() {
+      resultEl.textContent = "";
+      resultEl.className = "result";
+      attempts = 0;
+
+      [a, b] = generateFraction();
+      [c, d] = generateFraction();
+
+      // Biztosítjuk, hogy a két nevező ne szaladjon el kezelhetetlenül nagy közös nevezőbe
+      if (difficultyEl.value === 'hard') {
+        while (lcm(b, d) > 600) {
+          [a, b] = generateFraction();
+          [c, d] = generateFraction();
+        }
+      }
+
+      commonDen = lcm(b, d);
+      newNum1 = a * (commonDen / b);
+      newNum2 = c * (commonDen / d);
+
+      showNum1.textContent = a;
+      showDen1.textContent = b;
+      showNum2.textContent = c;
+      showDen2.textContent = d;
+
+      num1El.value = "";
+      den1El.value = "";
+      num2El.value = "";
+      den2El.value = "";
+      num1El.focus();
+    }
+
+    function prettyFrac(num, den) {
+      return `
+        <span class="pretty-frac">
+          <div class="top">${num}</div>
+          <div class="bottom">${den}</div>
+        </span>
+      `;
+    }
+
+    function check() {
+      attempts++;
+
+      // Felhasználó adatai: A2 (u1/ud1) és B2 (u2/ud2)
+      const u1 = Number(num1El.value);
+      const ud1 = Number(den1El.value);
+      const u2 = Number(num2El.value);
+      const ud2 = Number(den2El.value);
+
+      if (!u1 || !ud1 || !u2 || !ud2) {
+        resultEl.textContent = "Tölts ki minden mezőt!";
+        resultEl.className = "result wrong";
+        return;
+      }
+
+      // 1. A2 és B2 nevezője egyezzen meg (ud1 === ud2)
+      const sameDenom = (ud1 === ud2 && ud1 > 0);
+
+      // 2. A1 és A2 ugyanannyi legyen (a/b == u1/ud1  =>  a * ud1 === u1 * b)
+      const isA1A2Equal = (a * ud1 === u1 * b);
+
+      // 3. B1 és B2 ugyanannyi legyen (c/d == u2/ud2  =>  c * ud2 === u2 * d)
+      const isB1B2Equal = (c * ud2 === u2 * d);
+
+      if (sameDenom && isA1A2Equal && isB1B2Equal) {
+        good++;
+        goodEl.textContent = good;
+        resultEl.textContent = "Helyes!";
+        resultEl.className = "result correct";
+        return;
+      }
+
+      if (attempts < 3) {
+        bad++;
+        badEl.textContent = bad;
+        resultEl.textContent = "Nem jó, próbáld újra!";
+        resultEl.className = "result wrong";
+        return;
+      }
+
+      bad++;
+      badEl.textContent = bad;
+
+      resultEl.innerHTML =
+        "Helyes megoldás (legkisebb közös nevezővel):<br>" +
+        prettyFrac(newNum1, commonDen) +
+        " és " +
+        prettyFrac(newNum2, commonDen);
+
+      resultEl.className = "result wrong";
+    }
+
+    document.getElementById('checkBtn').addEventListener('click', check);
+    document.getElementById('nextBtn').addEventListener('click', newTask);
+    difficultyEl.addEventListener('change', newTask);
+
+    [num1El, den1El, num2El, den2El].forEach(input => {
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') check();
+      });
+    });
+
+    newTask();
+  </script>
+</body>
+
+</html>
