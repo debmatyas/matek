@@ -18,8 +18,8 @@ const shapes = [
     { 
         id: 'deltoid', 
         name: 'deltoid', 
-        file: 'deltoid.png', 
-        formulaFile: 'deltoid_terulet.png',
+        file: '../img/deltoid.png', 
+        formulaFile: '../img/deltoid_terulet.png',
         calc: () => {
             let eObj = getRandomLength(4, 12);
             let fObj = getRandomLength(4, 12);
@@ -33,8 +33,8 @@ const shapes = [
     { 
         id: 'derekszogu_haromszog', 
         name: 'derékszögű háromszög', 
-        file: 'derekszogu_haromszog.png', 
-        formulaFile: 'haromszog_terulet.png',
+        file: '../img/derekszogu_haromszog.png', 
+        formulaFile: '../img/haromszog_terulet.png',
         calc: () => {
             let aObj = getRandomLength(3, 12);
             let bObj = getRandomLength(3, 12);
@@ -48,8 +48,8 @@ const shapes = [
     { 
         id: 'haromszog', 
         name: 'általános háromszög', 
-        file: 'haromszog.jpg', 
-        formulaFile: 'haromszog_terulet.png',
+        file: '../img/haromszog.jpg', 
+        formulaFile: '../img/haromszog_terulet.png',
         calc: () => {
             let aObj = getRandomLength(4, 15);
             let maObj = getRandomLength(3, 10);
@@ -63,8 +63,8 @@ const shapes = [
     { 
         id: 'hurtrapez', 
         name: 'húrtrapéz', 
-        file: 'hurtrapez.png', 
-        formulaFile: 'trapez_terulet.png',
+        file: '../img/hurtrapez.png', 
+        formulaFile: '../img/trapez_terulet.png',
         calc: () => {
             let aObj = getRandomLength(6, 14);
             let cObj = getRandomLength(2, 6);
@@ -79,8 +79,8 @@ const shapes = [
     { 
         id: 'kor', 
         name: 'kör', 
-        file: 'kor.jpg', 
-        formulaFile: 'kor_terulet.png',
+        file: '../img/kor.jpg', 
+        formulaFile: '../img/kor_terulet.png',
         calc: () => {
             let rObj = getRandomLength(2, 8);
             // Itt most fixen 3.14-gyel számolunk
@@ -94,8 +94,8 @@ const shapes = [
     { 
         id: 'negyzet', 
         name: 'négyzet', 
-        file: 'negyzet.jpg', 
-        formulaFile: 'negyzet_terulet.png',
+        file: '../img/negyzet.jpg', 
+        formulaFile: '../img/negyzet_terulet.png',
         calc: () => {
             let aObj = getRandomLength(2, 12);
             let areaCm2 = aObj.cm * aObj.cm;
@@ -108,8 +108,8 @@ const shapes = [
     { 
         id: 'paralelogramma', 
         name: 'paralelogramma', 
-        file: 'paralelogramma.png', 
-        formulaFile: 'paralelogramma_terulet.png',
+        file: '../img/paralelogramma.png', 
+        formulaFile: '../img/paralelogramma_terulet.png',
         calc: () => {
             let aObj = getRandomLength(3, 12);
             let mObj = getRandomLength(2, 10);
@@ -123,8 +123,8 @@ const shapes = [
     { 
         id: 'rombusz', 
         name: 'rombusz', 
-        file: 'rombusz.png', 
-        formulaFile: 'rombusz_terulet.png',
+        file: '../img/rombusz.png', 
+        formulaFile: '../img/rombusz_terulet.png',
         calc: () => {
             let eObj = getRandomLength(4, 12);
             let fObj = getRandomLength(4, 12);
@@ -138,8 +138,8 @@ const shapes = [
     { 
         id: 'teglalap', 
         name: 'téglalap', 
-        file: 'teglalap.jpg', 
-        formulaFile: 'teglalap_terulet.png',
+        file: '../img/teglalap.jpg', 
+        formulaFile: '../img/teglalap_terulet.png',
         calc: () => {
             let aObj = getRandomLength(2, 12);
             let bObj = getRandomLength(2, 12);
@@ -153,8 +153,8 @@ const shapes = [
     { 
         id: 'trapez', 
         name: 'trapéz', 
-        file: 'trapez.png', 
-        formulaFile: 'trapez_terulet.png',
+        file: '../img/trapez.png', 
+        formulaFile: '../img/trapez_terulet.png',
         calc: () => {
             let aObj = getRandomLength(6, 14);
             let cObj = getRandomLength(2, 6);
