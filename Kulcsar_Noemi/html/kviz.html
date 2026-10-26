@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matematika Elméleti Kvíz - Teljes Tananyag</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 750px;
+        }
+        /* Főmenü */
+        .main-menu {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 15px;
+        }
+        .main-menu a {
+            text-decoration: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #495057;
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        .main-menu a:hover {
+            background-color: #e2e6ea;
+            color: #007bff;
+        }
+        .main-menu a.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+        }
+        .question-container {
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .question-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #212529;
+        }
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option-btn {
+            background-color: white;
+            border: 1px solid #ced4da;
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #e2e6ea;
+            border-color: #b1b7bc;
+        }
+        .option-btn.correct {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #155724;
+            font-weight: bold;
+        }
+        .option-btn.incorrect {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #721c24;
+        }
+        .formula {
+            display: inline-block;
+            background: #e9ecef;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+            color: #007bff;
+            font-size: 16px;
+        }
+        #next-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            display: none;
+        }
+        #next-btn:hover {
+            background-color: #0056b3;
+        }
+        #result-card {
+            text-align: center;
+            display: none;
+        }
+        #result-card h3 {
+            font-size: 24px;
+            color: #28a745;
+        }
+        .progress-info {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <!-- Főmenü -->
+        <div class="main-menu">
+            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/sikidomok.html">Síkidomok</a>
+            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/atvaltas.html">Mértékegység átváltás</a>
+            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/tortek.html">Törtek</a>
+            <a href="https://debmatyas.github.io/matek/Kulcsar_Noemi/html/kviz.html" class="active">Elméleti Kvíz</a>
+        </div>
+
+        <h2>Matematika Elméleti Kvíz</h2>
+
+        <div id="quiz-box">
+            <div class="question-container">
+                <div id="progress-info" class="progress-info"></div>
+                <div id="question-text" class="question-title">Kérdés betöltése...</div>
+                <div id="options-container" class="options-list"></div>
+            </div>
+            <button id="next-btn">Következő kérdés</button>
+        </div>
+
+        <div id="result-card">
+            <h3>Gratulálok, a kvíz véget ért!</h3>
+            <p id="score-text" style="font-size: 18px; font-weight: bold; margin: 20px 0;"></p>
+            <button id="restart-btn" style="background-color: #28a745; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 6px; cursor: pointer;">Újrakezdés</button>
+        </div>
+    </div>
+
+    <script>
+        const originalQuizData = [
+            {
+                question: "Hogyan szorozunk össze két törtet?",
+                options: [
+                    "A számlálót a számlálóval, a nevezőt a nevezővel",
+                    "Közös nevezőre hozzuk, majd összeadjuk a számlálókat",
+                    "Az elsőt megszorozzuk a második reciprokával",
+                    "Keresztbe szorozzuk a számlálókat és nevezőket"
+                ],
+                correct: 0
+            },
+            {
+                question: "Mi a szabálya a törttel való osztásnak?",
+                options: [
+                    "A számlálót osztjuk a számlálóval, nevezőt a nevezővel",
+                    "Törtet törttel úgy osztunk, hogy a reciprokával szorzunk",
+                    "Csak azonos nevezőjű törtek oszthatók el egymással",
+                    "A nevezőt változatlanul hagyjuk, a számlálót osztjuk"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mikor osztható egy szám 3-mal?",
+                options: [
+                    "Ha az utolsó számjegye osztható 3-mal",
+                    "Ha a szám páros",
+                    "Ha a számjegyeinek összege osztható 3-cal",
+                    "Ha az utolsó két számjegye nulla"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mikor osztható egy szám 4-gyel?",
+                options: [
+                    "Ha az utolsó számjegye osztható 4-gyel",
+                    "Ha az utolsó két számjegyéből álló szám osztható 4-gyel",
+                    "Ha a számjegyeinek összege osztható 4-gyel",
+                    "Ha osztható 2-vel és 3-mal is"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mikor osztható egy szám 6-tal?",
+                options: [
+                    "Ha osztható 2-vel és 3-mal is",
+                    "Ha az utolsó számjegye 6",
+                    "Ha a számjegyeinek összege osztható 6-tal",
+                    "Ha osztható 2-vel és 4-gyel is"
+                ],
+                correct: 0
+            },
+            {
+                question: "Mit nevezünk prímszámnak?",
+                options: [
+                    "Az összes 1-nél nagyobb páratlan számot",
+                    "Azokat a számokat, amiknek pontosan két osztójuk van: az 1 és önmaga",
+                    "Azokat a számokat, amelyeknek 2-nél több osztójuk van",
+                    "Azokat a számokat, amelyek csak 10-zel oszthatók"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mennyi az azonos alapú hatványok szorzásának szabálya: <span class='formula'>a<sup>b</sup> &middot; a<sup>c</sup></span> ?",
+                options: [
+                    "a<sup>b &middot; c</sup>",
+                    "a<sup>b - c</sup>",
+                    "a<sup>b + c</sup>",
+                    "(2a)<sup>b + c</sup>"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mennyi az azonos alapú hatványok osztásának szabálya: <span class='formula'>a<sup>b</sup> / a<sup>c</sup></span> ?",
+                options: [
+                    "a<sup>b + c</sup>",
+                    "a<sup>b - c</sup>",
+                    "a<sup>b &middot; c</sup>",
+                    "a<sup>c - b</sup>"
+                ],
+                correct: 1
+            },
+            {
+                question: "Hogyan alakul a hatványok hatványa: <span class='formula'>(a<sup>b</sup>)<sup>c</sup></span> ?",
+                options: [
+                    "a<sup>b + c</sup>",
+                    "a<sup>b<sup>c</sup></sup>",
+                    "a<sup>b &middot; c</sup>",
+                    "a<sup>b - c</sup>"
+                ],
+                correct: 2
+            },
+            {
+                question: "Mi a helyes sorrend a műveleti sorrend betartásakor?",
+                options: [
+                    "Összeadás, kivonás, szorzás, osztás, zárójel",
+                    "Hatványozás, zárójel, szorzás/osztás, összeadás/kivonás (balról jobbra)",
+                    "Zárójel, hatványozás, szorzás/osztás, összeadás/kivonás (balról jobbra)",
+                    "Mindig szigorúan balról jobbra haladva minden művelet"
+                ],
+                correct: 2
+            },
+            {
+                question: "Hogy szól a Pitagorasz-tétel derékszögű háromszögben (ahol a és b a befogók, c az átfogó)?",
+                options: [
+                    "a + b = c",
+                    "a<sup>2</sup> &middot; b<sup>2</sup> = c<sup>2</sup>",
+                    "a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup>",
+                    "(a + b)<sup>2</sup> = c<sup>2</sup>"
+                ],
+                correct: 2
+            },
+            {
+                question: "Melyik állítás igaz az egyenes arányosságra?",
+                options: [
+                    "Ha az egyik mennyiség hányszorosára nő, a másik is ugyanannyiszorosára nő",
+                    "Ha az egyik mennyiség nő, a másik ugyanannyiad részére csökken",
+                    "A két összetartozó érték szorzata állandó",
+                    "Nincs összefüggés a változások között"
+                ],
+                correct: 0
+            },
+            {
+                question: "Melyik állítás igaz a fordított arányosságra?",
+                options: [
+                    "A két összetartozó érték hányadosa állandó",
+                    "A két összetartozó érték szorzata állandó (<span class='formula'>x &middot; y = k</span>)",
+                    "Ha az egyik mennyiség duplájára nő, a másik is duplájára nő",
+                    "A grafikonja egy emelkedő egyenes"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi a téglalap területének képlete (oldalak: a és b)?",
+                options: [
+                    "T = 2 &middot; (a + b)",
+                    "T = a &middot; b",
+                    "T = a<sup>2</sup> + b<sup>2</sup>",
+                    "T = (a &middot; b) / 2"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi a négyzet területének képlete (oldal: a)?",
+                options: [
+                    "T = 4 &middot; a",
+                    "T = a<sup>3</sup>",
+                    "T = a<sup>2</sup>",
+                    "T = a &middot; 2"
+                ],
+                correct: 2
+            },
+            {
+                question: "Hogyan számoljuk ki a kör kerületét (sugár: r)?",
+                options: [
+                    "K = r<sup>2</sup> &middot; &pi;",
+                    "K = 2 &middot; r &middot; &pi;",
+                    "K = r &middot; &pi;",
+                    "K = 4 &middot; r &middot; &pi;"
+                ],
+                correct: 1
+            },
+            {
+                question: "Hogyan számoljuk ki a kör területét (sugár: r)?",
+                options: [
+                    "T = 2 &middot; r &middot; &pi;",
+                    "T = r<sup>2</sup> &middot; &pi;",
+                    "T = (d &middot; &pi;) / 2",
+                    "T = 4 &middot; r<sup>2</sup> &middot; &pi;"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi a deltoid területének képlete (átlók: e és f)?",
+                options: [
+                    "T = e &middot; f",
+                    "T = (e &middot; f) / 2",
+                    "T = 2 &middot; (e + f)",
+                    "T = (e + f) / 2"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi a trapéz területének képlete (alapok: a és c, magasság: m)?",
+                options: [
+                    "T = (a &middot; c &middot; m) / 2",
+                    "T = ((a + c) &middot; m) / 2",
+                    "T = (a + c) &middot; m",
+                    "T = a &middot; m"
+                ],
+                correct: 1
+            },
+            {
+                question: "Mi a téglatest térfogatának képlete (élek: a, b, c)?",
+                options: [
+                    "V = a &middot; b &middot; c",
+                    "V = 2 &middot; (a + b + c)",
+                    "V = a<sup>2</sup> &middot; b",
+                    "V = (a &middot; b &middot; c) / 3"
+                ],
+                correct: 0
+            }
+        ];
+
+        let quizData = [];
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        const progressInfoEl = document.getElementById('progress-info');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const nextBtn = document.getElementById('next-btn');
+        const quizBox = document.getElementById('quiz-box');
+        const resultCard = document.getElementById('result-card');
+        const scoreText = document.getElementById('score-text');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // Tömb véletlenszerű keverése (Fisher-Yates algoritmus) + válaszlehetőségek összekeverése
+        function shuffleQuiz() {
+            // Másolat készítése és kérdések keverése
+            quizData = JSON.parse(JSON.stringify(originalQuizData));
+            quizData.sort(() => Math.random() - 0.5);
+
+            // Minden kérdésnél a válaszlehetőségeket is keverjük, hogy a helyes válasz ne mindig ugyanazon a helyen legyen
+            quizData.forEach(q => {
+                let optionsWithIndex = q.options.map((opt, idx) => ({ text: opt, originalIndex: idx }));
+                optionsWithIndex.sort(() => Math.random() - 0.5);
+                
+                q.options = optionsWithIndex.map(item => item.text);
+                q.correct = optionsWithIndex.findIndex(item => item.originalIndex === q.correct);
+            });
+        }
+
+        function loadQuestion() {
+            answered = false;
+            nextBtn.style.display = 'none';
+            
+            const q = quizData[currentQuestion];
+            progressInfoEl.textContent = `Kérdés: ${currentQuestion + 1} / ${quizData.length}`;
+            questionTextEl.innerHTML = q.question;
+            optionsContainerEl.innerHTML = '';
+
+            q.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = option;
+                btn.onclick = () => selectOption(index, btn);
+                optionsContainerEl.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedIndex, selectedBtn) {
+            if (answered) return;
+            answered = true;
+
+            const q = quizData[currentQuestion];
+            const buttons = optionsContainerEl.getElementsByClassName('option-btn');
+
+            if (selectedIndex === q.correct) {
+                selectedBtn.classList.add('correct');
+                score++;
+            } else {
+                selectedBtn.classList.add('incorrect');
+                buttons[q.correct].classList.add('correct');
+            }
+
+            Array.from(buttons).forEach(b => b.disabled = true);
+            nextBtn.style.display = 'block';
+        }
+
+        nextBtn.onclick = () => {
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        };
+
+        function showResult() {
+            quizBox.style.display = 'none';
+            resultCard.style.display = 'block';
+            const percentage = Math.round((score / quizData.length) * 100);
+            scoreText.textContent = `${quizData.length} kérdésből ${score} választ találtál el helyesen. Eredményed: ${percentage}%`;
+        }
+
+        restartBtn.onclick = () => {
+            currentQuestion = 0;
+            score = 0;
+            quizBox.style.display = 'block';
+            resultCard.style.display = 'none';
+            shuffleQuiz();
+            loadQuestion();
+        };
+
+        // Indításkor összekeverjük a kérdéseket
+        shuffleQuiz();
+        loadQuestion();
+    </script>
+</body>
+</html>
