@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algebrai Átalakítások Gyakorló</title>
+
+    <!-- MathJax CDN a matematikai képletek szép megjelenítéséhez -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* Főmenü stílusa */
+        .main-menu {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 15px;
+        }
+
+        .main-menu a {
+            text-decoration: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #495057;
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+
+        .main-menu a:hover {
+            background-color: #e2e6ea;
+            color: #007bff;
+        }
+
+        .main-menu a.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+
+        select,
+        button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .task-row {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 12px;
+            padding: 15px 12px;
+            border-radius: 6px;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+        }
+
+        .task-main {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Szépen formázott feladat címke doboz */
+        .task-label-box {
+            font-size: 20px;
+            text-align: center;
+            background: #fff;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            word-break: break-all;
+        }
+
+        .solution-btn {
+            background-color: #17a2b8;
+            font-weight: bold;
+        }
+
+        .solution-btn:hover {
+            background-color: #138496;
+        }
+
+        .solution-box {
+            margin-top: 10px;
+            padding: 12px;
+            background-color: #fff;
+            border: 1px dashed #28a745;
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <!-- Főmenü -->
+        <div id="main-menu-container"></div>
+
+        <h2>Algebrai Átalakítások Gyakorló</h2>
+
+        <label for="category">Válassz szintet:</label>
+        <select id="category" onchange="generateNewTask()">
+            <option value="part0">0. Szint - Egyszerű (Zárójel nélküli, többváltozós, 5+ tag)</option>
+            <option value="part1">1. Szint - Alap (Zárójelbontás és egyneműek)</option>
+            <option value="part2">2. Szint - Egyismeretlenes (Középfokú)</option>
+            <option value="part3">3. Szint - Kétismeretlenes (Haladó)</option>
+        </select>
+
+        <button id="start-btn" onclick="generateNewTask()">Új feladat</button>
+
+        <div id="questions-container" style="display:none; margin-top: 20px;">
+            <div id="tasks-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const taskData = {
+            part0: [
+                { id: "0a", expr: "3x^2y - 5xy + 2x^2y + 4xy - 7", step: "= (3+2)x^2y + (-5+4)xy - 7", answer: "5x^2y - xy - 7" },
+                { id: "0b", expr: "a^3b^2 + 4a^2b - 2a^3b^2 + 6a^2b + 9", step: "= (1-2)a^3b^2 + (4+6)a^2b + 9", answer: "-a^3b^2 + 10a^2b + 9" },
+                { id: "0c", expr: "2abc + 5ab - 3abc + 8ac - 2ab", step: "= (2-3)abc + (5-2)ab + 8ac", answer: "-abc + 3ab + 8ac" },
+                { id: "0d", expr: "4x^3 - 2x^2y + x^3 + 5x^2y - 6", step: "= (4+1)x^3 + (-2+5)x^2y - 6", answer: "5x^3 + 3x^2y - 6" },
+                { id: "0e", expr: "7xy^2 - 3x^2y + 2xy^2 - 4x^2y + 5", step: "= (7+2)xy^2 + (-3-4)x^2y + 5", answer: "9xy^2 - 7x^2y + 5" },
+                { id: "0f", expr: "a^4 - 3a^2b^2 + 2a^4 + 5a^2b^2 - 10", step: "= (1+2)a^4 + (-3+5)a^2b^2 - 10", answer: "3a^4 + 2a^2b^2 - 10" },
+                { id: "0g", expr: "5x^2y^2 - 2xy + 3x^2y^2 - 7xy + 4", step: "= (5+3)x^2y^2 + (-2-7)xy + 4", answer: "8x^2y^2 - 9xy + 4" },
+                { id: "0h", expr: "2ab^3 + 4a^3b - ab^3 - 2a^3b + 6", step: "= (2-1)ab^3 + (4-2)a^3b + 6", answer: "ab^3 + 2a^3b + 6" },
+                { id: "0i", expr: "6x^3y - 3x^2y^2 + 2x^3y + 5x^2y^2 - 8", step: "= (6+2)x^3y + (-3+5)x^2y^2 - 8", answer: "8x^3y + 2x^2y^2 - 8" },
+                { id: "0j", expr: "3a^2bc - 4ab^2c + 2a^2bc + ab^2c - 5", step: "= (3+2)a^2bc + (-4+1)ab^2c - 5", answer: "5a^2bc - 3ab^2c - 5" },
+                { id: "0k", expr: "4xy^3 - x^3y + 3xy^3 + 4x^3y - 2", step: "= (4+3)xy^3 + (-1+4)x^3y - 2", answer: "7xy^3 + 3x^3y - 2" },
+                { id: "0l", expr: "m^3n^2 - 2m^2n^3 + 4m^3n^2 + 5m^2n^3 + 1", step: "= (1+4)m^3n^2 + (-2+5)m^2n^3 + 1", answer: "5m^3n^2 + 3m^2n^3 + 1" },
+                { id: "0m", expr: "8a^2b - 3ab^2 - 5a^2b + 6ab^2 - 4", step: "= (8-5)a^2b + (-3+6)ab^2 - 4", answer: "3a^2b + 3ab^2 - 4" },
+                { id: "0n", expr: "2x^4y^2 + x^2y^4 - x^4y^2 - 3x^2y^4 + 7", step: "= (2-1)x^4y^2 + (1-3)x^2y^4 + 7", answer: "x^4y^2 - 2x^2y^4 + 7" },
+                { id: "0o", expr: "9p^2q - 4pq^2 - 2p^2q + 7pq^2 - 3", step: "= (9-2)p^2q + (-4+7)pq^2 - 3", answer: "7p^2q + 3pq^2 - 3" },
+                { id: "0p", expr: "3u^3v^3 - u^2v^2 + 4u^3v^3 + 3u^2v^2 - 9", step: "= (3+4)u^3v^3 + (-1+3)u^2v^2 - 9", answer: "7u^3v^3 + 2u^2v^2 - 9" },
+                { id: "0q", expr: "5r^2s - 2rs^2 + r^2s + 3rs^2 - 6", step: "= (5+1)r^2s + (-2+3)rs^2 - 6", answer: "6r^2s + rs^2 - 6" },
+                { id: "0r", expr: "a^5 - 2a^3b^2 + 3a^5 + 4a^3b^2 - 11", step: "= (1+3)a^5 + (-2+4)a^3b^2 - 11", answer: "4a^5 + 2a^3b^2 - 11" },
+                { id: "0s", expr: "4x^2yz - 2xy^2z + x^2yz + 5xy^2z - 2", step: "= (4+1)x^2yz + (-2+5)xy^2z - 2", answer: "5x^2yz + 3xy^2z - 2" },
+                { id: "0t", expr: "7ab^2c^3 - ab^2c^3 + 2ab^2c^3 - 3ab^2c^3 + 4", step: "= (7-1+2-3)ab^2c^3 + 4", answer: "5ab^2c^3 + 4" },
+                { id: "0u", expr: "3x^3y^2 - 2x^2y^3 + x^3y^2 + 5x^2y^3 - 8", step: "= (3+1)x^3y^2 + (-2+5)x^2y^3 - 8", answer: "4x^3y^2 + 3x^2y^3 - 8" },
+                { id: "0v", expr: "m^4n - 3m^2n^3 + 2m^4n + 4m^2n^3 - 5", step: "= (1+2)m^4n + (-3+4)m^2n^3 - 5", answer: "3m^4n + m^2n^3 - 5" },
+                { id: "0w", expr: "6u^2v^2 - u^3v + 2u^2v^2 + 4u^3v - 12", step: "= (6+2)u^2v^2 + (-1+4)u^3v - 12", answer: "8u^2v^2 + 3u^3v - 12" },
+                { id: "0x", expr: "2a^3b^3 - 4a^2b^2 + 5a^3b^3 + a^2b^2 - 15", step: "= (2+5)a^3b^3 + (-4+1)a^2b^2 - 15", answer: "7a^3b^3 - 3a^2b^2 - 15" }
+            ],
+            part1: [
+                { id: "1a", expr: "3(2x + 4) + 5", step: "= 6x + 12 + 5", answer: "6x + 17" },
+                { id: "1b", expr: "5(x - 3) - 2x", step: "= 5x - 15 - 2x", answer: "3x - 15" },
+                { id: "1c", expr: "-2(4x + 1) + 10", step: "= -8x - 2 + 10", answer: "-8x + 8" },
+                { id: "1d", expr: "4(3x - 2) - 3(x + 1)", step: "= 12x - 8 - 3x - 3", answer: "9x - 11" },
+                { id: "1e", expr: "-5(2 - x) + 3x", step: "= -10 + 5x + 3x", answer: "8x - 10" },
+                { id: "1f", expr: "7(x + 2) - 4(2x - 1)", step: "= 7x + 14 - 8x + 4", answer: "-x + 18" },
+                { id: "1g", expr: "2(5x + 3) + 3(2x - 4)", step: "= 10x + 6 + 6x - 12", answer: "16x - 6" },
+                { id: "1h", expr: "-3(x - 5) - 2(3x + 1)", step: "= -3x + 15 - 6x - 2", answer: "-9x + 13" },
+                { id: "1i", expr: "6(2x - 1) - 5(x - 3)", step: "= 12x - 6 - 5x + 15", answer: "7x + 9" },
+                { id: "1j", expr: "4(-x + 3) + 2(4x - 5)", step: "= -4x + 12 + 8x - 10", answer: "4x + 2" },
+                { id: "1k", expr: "x(2x + 3) - 2x^2", step: "= 2x^2 + 3x - 2x^2", answer: "3x" },
+                { id: "1l", expr: "3x(x - 2) - 3x^2 + 5x", step: "= 3x^2 - 6x - 3x^2 + 5x", answer: "-x" },
+                { id: "1m", expr: "-4(2x - 3) + 8x", step: "= -8x + 12 + 8x", answer: "12" },
+                { id: "1n", expr: "5(3x + 1) - 15x", step: "= 15x + 5 - 15x", answer: "5" },
+                { id: "1o", expr: "2x(3x - 1) - 6x^2 + 4x", step: "= 6x^2 - 2x - 6x^2 + 4x", answer: "2x" },
+                { id: "1p", expr: "-2(3x - 4) + 6x - 8", step: "= -6x + 8 + 6x - 8", answer: "0" },
+                { id: "1q", expr: "3(4x - 5) - 12x + 15", step: "= 12x - 15 - 12x + 15", answer: "0" },
+                { id: "1r", expr: "x(x + 5) - x^2 - 3x", step: "= x^2 + 5x - x^2 - 3x", answer: "2x" },
+                { id: "1s", expr: "-5(x - 2) + 5x - 10", step: "= -5x + 10 + 5x - 10", answer: "0" },
+                { id: "1t", expr: "4(2x + 3) - 8x - 12", step: "= 8x + 12 - 8x - 12", answer: "0" },
+                { id: "1u", expr: "2(x - 4) + 3(x + 2)", step: "= 2x - 8 + 3x + 6", answer: "5x - 2" },
+                { id: "1v", expr: "-3(2x + 1) + 4(x - 2)", step: "= -6x - 3 + 4x - 8", answer: "-2x - 11" },
+                { id: "1w", expr: "5(x - 1) - 2(x + 3)", step: "= 5x - 5 - 2x - 6", answer: "3x - 11" },
+                { id: "1x", expr: "4(3x + 2) - 5(2x - 1)", step: "= 12x + 8 - 10x + 5", answer: "2x + 13" }
+            ],
+            part2: [
+                { id: "2a", expr: "-12(-11x-9)-13x(-2x+4)", step: "= 132x + 108 + 26x^2 - 52x", answer: "26x^2 + 80x + 108" },
+                { id: "2b", expr: "-14x(-11x+14)+4(-8x+11)", step: "= 154x^2 - 196x - 32x + 44", answer: "154x^2 - 228x + 44" },
+                { id: "2c", expr: "-14(18x+7)+2x(-3x+9)", step: "= -252x - 98 - 6x^2 + 18x", answer: "-6x^2 - 234x - 98" },
+                { id: "2d", expr: "8x(6x+17)+13(-14x+19)", step: "= 48x^2 + 136x - 182x + 247", answer: "48x^2 - 46x + 247" },
+                { id: "2e", expr: "-17(9x+4)+12x(-10x-6)", step: "= -153x - 68 - 120x^2 - 72x", answer: "-120x^2 - 225x - 68" },
+                { id: "2f", expr: "8x(7x-7)-8(13x+5)", step: "= 56x^2 - 56x - 104x - 40", answer: "56x^2 - 160x - 40" },
+                { id: "2g", expr: "6x(5x-4)+3(-6x+4)", step: "= 30x^2 - 24x - 18x + 12", answer: "30x^2 - 42x + 12" },
+                { id: "2h", expr: "-17x(15x-7)+13(19x-11)", step: "= -255x^2 + 119x + 247x - 143", answer: "-255x^2 + 366x - 143" },
+                { id: "2i", expr: "19x(-5x-6)+11(-11x+5)", step: "= -95x^2 - 114x - 121x + 55", answer: "-95x^2 - 235x + 55" },
+                { id: "2j", expr: "2x(-11x-6)-8(6x-7)", step: "= -22x^2 - 12x - 48x + 56", answer: "-22x^2 - 60x + 56" },
+                { id: "2k", expr: "-17(-x+9)+15x(3x+12)", step: "= 17x - 153 + 45x^2 + 180x", answer: "45x^2 + 197x - 153" },
+                { id: "2l", expr: "10x(-x+15)+7(-12x-5)", step: "= -10x^2 + 150x - 84x - 35", answer: "-10x^2 + 66x - 35" },
+                { id: "2m", expr: "9x(-6x-12)-13(10x+5)", step: "= -54x^2 - 108x - 130x - 65", answer: "-54x^2 - 238x - 65" },
+                { id: "2n", expr: "15x(-9x+2)+6(13x-8)", step: "= -135x^2 + 30x + 78x - 48", answer: "-135x^2 + 108x - 48" },
+                { id: "2o", expr: "-15(-9x+12)+11x(-17x+4)", step: "= 135x - 180 - 187x^2 + 44x", answer: "-187x^2 + 179x - 180" },
+                { id: "2p", expr: "3(-4x+5)-20x(-17x+10)", step: "= -12x + 15 + 340x^2 - 200x", answer: "340x^2 - 212x + 15" },
+                { id: "2q", expr: "4(18x-1)+10x(-19x+9)", step: "= 72x - 4 - 190x^2 + 90x", answer: "-190x^2 + 162x - 4" },
+                { id: "2r", expr: "8(-9x+20)+10x(7x-18)", step: "= -72x + 160 + 70x^2 - 180x", answer: "70x^2 - 252x + 160" },
+                { id: "2s", expr: "-7(10x+7)-11x(-13x-15)", step: "= -70x - 49 + 143x^2 + 165x", answer: "143x^2 + 95x - 49" },
+                { id: "2t", expr: "11x(-6x+8)-4(-7x-16)", step: "= -66x^2 + 88x + 28x + 64", answer: "-66x^2 + 116x + 64" },
+                { id: "2u", expr: "11x(x+2)-18(8x-2)", step: "= 11x^2 + 22x - 144x + 36", answer: "11x^2 - 122x + 36" },
+                { id: "2v", expr: "11(-13x+18)+8x(10x+14)", step: "= -143x + 198 + 80x^2 + 112x", answer: "80x^2 - 31x + 198" },
+                { id: "2w", expr: "2(10x+11)-17x(18x-4)", step: "= 20x + 22 - 306x^2 + 68x", answer: "-306x^2 + 88x + 22" },
+                { id: "2x", expr: "4x(-14x+7)-15(-17x+13)", step: "= -56x^2 + 28x + 255x - 195", answer: "-56x^2 + 283x - 195" }
+            ],
+            part3: [
+                { id: "3a", expr: "-12y(-11x-9y)-13(-2x+4y)", step: "= 132xy + 108y^2 + 26x - 52y", answer: "108y^2 + 132xy + 26x - 52y" },
+                { id: "3b", expr: "-14x(-11x+14y)+4(-8x+11y)", step: "= 154x^2 - 196xy - 32x + 44y", answer: "154x^2 - 196xy - 32x + 44y" },
+                { id: "3c", expr: "18(19x+7y)+2y(-3x+9y)", step: "= 342x + 126y - 6xy + 18y^2", answer: "18y^2 - 6xy + 342x + 126y" },
+                { id: "3d", expr: "8x(6x+17y)+13y(-14x+19y)", step: "= 48x^2 + 136xy - 182xy + 247y^2", answer: "48x^2 + 247y^2 - 46xy" },
+                { id: "3e", expr: "-17(9x+4y)+12x(-10x-6y)", step: "= -153x - 68y - 120x^2 - 72xy", answer: "-120x^2 - 72xy - 153x - 68y" },
+                { id: "3f", expr: "8(7x-7y)-8x(13x+5y)", step: "= 56x - 56y - 104x^2 - 40xy", answer: "-104x^2 - 40xy + 56x - 56y" },
+                { id: "3g", expr: "5(-4x+3y)-6x(4x+14y)", step: "= -20x + 15y - 24x^2 - 84xy", answer: "-24x^2 - 84xy - 20x + 15y" },
+                { id: "3h", expr: "15x(-7x+13y)+20(-11x+16y)", step: "= -105x^2 + 195xy - 220x + 320y", answer: "-105x^2 + 195xy - 220x + 320y" },
+                { id: "3i", expr: "-5y(-6x+11y)-11x(5x-3y)", step: "= 30xy - 55y^2 - 55x^2 + 33xy", answer: "-55x^2 - 55y^2 + 63xy" },
+                { id: "3j", expr: "-11x(-6x-8y)+6(-7x+8y)", step: "= 66x^2 + 88xy - 42x + 48y", answer: "66x^2 + 88xy - 42x + 48y" },
+                { id: "3k", expr: "-17(-x+9y)+15x(3x+12y)", step: "= 17x - 153y + 45x^2 + 180xy", answer: "45x^2 + 180xy + 17x - 153y" },
+                { id: "3l", expr: "10(-x+15y)+7y(-12x-5y)", step: "= -10x + 150y - 84xy - 35y^2", answer: "-35y^2 - 84xy - 10x + 150y" },
+                { id: "3m", expr: "-6y(-12x+13y)+10x(5x+15y)", step: "= 72xy - 78y^2 + 50x^2 + 150xy", answer: "50x^2 - 78y^2 + 222xy" },
+                { id: "3n", expr: "-9x(2x+6y)+13y(-8x-15y)", step: "= -18x^2 - 54xy - 104xy - 195y^2", answer: "-18x^2 - 195y^2 - 158xy" },
+                { id: "3o", expr: "12y(11x-17y)+4(3x-4y)", step: "= 132xy - 204y^2 + 12x - 16y", answer: "-204y^2 + 132xy + 12x - 16y" },
+                { id: "3p", expr: "-20(-17x+10y)+9x(-7x+4y)", step: "= 340x - 200y - 63x^2 + 36xy", answer: "-63x^2 + 36xy + 340x - 200y" },
+                { id: "3q", expr: "-1(19x+10y)+19x(9x+8y)", step: "= -19x - 10y + 171x^2 + 152xy", answer: "171x^2 + 152xy - 19x - 10y" },
+                { id: "3r", expr: "19x(8x+10y)+7y(-18x+17y)", step: "= 152x^2 + 190xy - 126xy + 119y^2", answer: "152x^2 + 119y^2 + 64xy" },
+                { id: "3s", expr: "10(7x-11y)-13y(-15x+16y)", step: "= 70x - 110y + 195xy - 208y^2", answer: "-208y^2 + 195xy + 70x - 110y" },
+                { id: "3t", expr: "-6(8x-4y)-7y(-16x-15y)", step: "= -48x + 24y + 112xy + 105y^2", answer: "105y^2 + 112xy - 48x + 24y" },
+                { id: "3u", expr: "1y(2x-18y)+8x(-2x-9y)", step: "= 2xy - 18y^2 - 16x^2 - 72xy", answer: "-16x^2 - 18y^2 - 70xy" },
+                { id: "3v", expr: "18(8x+10y)+14y(x+9y)", step: "= 144x + 180y + 14xy + 126y^2", answer: "126y^2 + 14xy + 144x + 180y" },
+                { id: "3w", expr: "2(10x+11y)-17y(18x-4y)", step: "= 20x + 22y - 306xy + 68y^2", answer: "68y^2 - 306xy + 20x + 22y" },
+                { id: "3x", expr: "4(-14x+7y)-15x(-17x+13y)", step: "= -56x + 28y + 255x^2 - 195xy", answer: "255x^2 - 195xy - 56x + 28y" }
+            ]
+        };
+
+        let currentTask = null;
+        let timerInterval = null;
+
+        function generateNewTask() {
+            // Megállítjuk az esetlegesen futó előző időzítőt
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
+            const category = document.getElementById('category').value;
+            const tasks = taskData[category];
+            currentTask = tasks[Math.floor(Math.random() * tasks.length)];
+
+            const container = document.getElementById('tasks-list');
+            container.innerHTML = `
+                <div class="task-row" id="single-task-row">
+                    <div class="task-main">
+                        <!-- Szépen formázott, renderelt feladat -->
+                        <div class="task-label-box" id="task-expr-box">\\(${currentTask.expr}\\)</div>
+                        
+                        <!-- Mutasd a megoldást gomb -->
+                        <button id="show-sol-btn" class="solution-btn" onclick="startCountdown()">Mutasd a megoldást</button>
+                    </div>
+
+                    <!-- Megoldás doboz (kezdetben rejtve) -->
+                    <div id="solution-box" class="solution-box" style="display:none;">
+                        <div><strong>Kibontás:</strong> \\(${currentTask.step}\\)</div>
+                        <div><strong>Végeredmény:</strong> \\(${currentTask.answer}\\)</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('questions-container').style.display = 'block';
+
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        function startCountdown() {
+            const btn = document.getElementById('show-sol-btn');
+            const solBox = document.getElementById('solution-box');
+
+            btn.disabled = true;
+            let timeLeft = 30;
+            btn.innerText = `Megoldás megjelenítése: ${timeLeft}s`;
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    btn.innerText = `Megoldás megjelenítése: ${timeLeft}s`;
+                } else {
+                    clearInterval(timerInterval);
+                    btn.innerText = "Megoldás megjelenítve!";
+                    solBox.style.display = 'block';
+                    if (window.MathJax) {
+                        MathJax.typesetPromise([solBox]);
+                    }
+                }
+            }, 1000);
+        }
+
+        window.onload = function () {
+            generateNewTask();
+        };
+    </script>
+    <script src="../js/menu.js"></script>
+</body>
+
+</html>

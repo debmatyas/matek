@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <a href="sikidomok.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Síkidomok</a>
             <a href="atvaltas.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Mértékegység átváltás</a>
             <a href="tortek.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Törtek</a>
+            <a href="algebrai_atalakitasok.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Algebrai Átalakítások</a>
             <a href="kviz.html" style="text-decoration: none; padding: 8px 16px; font-size: 14px; font-weight: bold; color: #495057; background-color: #f8f9fa; border: 1px solid #ced4da; border-radius: 5px;">Elméleti Kvíz</a>
         </div>
     `;
